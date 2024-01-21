@@ -3,9 +3,7 @@ plugins {
     `kotlin-android`
 }
 
-dependencies {
-
-}
+apply(from = "$rootDir/base-module.gradle")
 
 android {
     namespace = "it.thefedex87.notes_domain"

@@ -8,10 +8,12 @@ object Compose {
     const val uiGraphics = "androidx.compose.ui:ui-graphics"
     const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
     const val material3 = "androidx.compose.material3:material3"
+    const val iconExtended = "androidx.compose.material:material-icons-extended"
     const val uiTooling = "androidx.compose.ui:ui-tooling"
     const val uiTestManifest = "androidx.compose.ui:ui-test-manifest"
+    const val navigation = "androidx.navigation:navigation-compose"
 
-    const val composeCompilerVersion = "1.5.5"
+    const val composeCompilerVersion = "1.5.2"
     const val compiler = "androidx.compose.compiler:compiler:$composeCompilerVersion"
 
     private const val hiltNavigationComposeVersion = "1.0.0"

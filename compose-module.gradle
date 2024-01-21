@@ -39,11 +39,13 @@ android {
 }
 
 dependencies {
+    implementation platform(Compose.bom)
     implementation Compose.compiler
     implementation Compose.ui
     implementation Compose.uiToolingPreview
     implementation Compose.hiltNavigationCompose
     implementation Compose.material3
+    implementation Compose.iconExtended
     //implementation Compose.runtime
     //implementation Compose.navigation
     //implementation Compose.viewModelCompose

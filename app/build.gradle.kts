@@ -63,6 +63,7 @@ dependencies {
     implementation(Compose.uiGraphics)
     implementation(Compose.uiToolingPreview)
     implementation(Compose.material3)
+    implementation(Compose.iconExtended)
     debugImplementation(Compose.uiTooling)
     debugImplementation(Compose.uiTestManifest)
     implementation(Compose.hiltNavigationCompose)
@@ -81,4 +82,6 @@ dependencies {
     androidTestImplementation(Testing.hiltTesting)
     testImplementation(Testing.coroutinesVersion)
 
+    // Project
+    implementation(project(Modules.coreUi))
 }
