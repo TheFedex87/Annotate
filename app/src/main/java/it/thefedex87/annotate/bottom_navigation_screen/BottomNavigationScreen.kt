@@ -27,6 +27,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import it.thefedex87.notes_presentation.TestUiInModule
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,7 +63,7 @@ fun BottomNavigationScreen(
             modifier = modifier.padding(values)
         ) {
             composable(route = BottomNavScreen.Notebooks.route) {
-                Text(text = "Notebooks")
+                TestUiInModule()
             }
             composable(route = BottomNavScreen.RecentNotes.route) {
                 Text(text = "Recents")
@@ -75,10 +77,8 @@ fun BottomBar(
     bottomBarVisible: Boolean,
     navController: NavHostController
 ) {
-    val screens = listOf(
-        BottomNavScreen.Notebooks,
-        BottomNavScreen.RecentNotes
-    )
+    val screens = PrepareBottomNavBarItems()
+
     AnimatedVisibility(
         visible = bottomBarVisible,
         enter = slideInVertically(initialOffsetY = { it }),
@@ -103,7 +103,7 @@ fun BottomBar(
 
 @Composable
 fun RowScope.AddItem(
-    screen: BottomNavScreen,
+    screen: BottomNavScreenMenuItem,
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {

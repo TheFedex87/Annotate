@@ -1,16 +1,12 @@
 package it.thefedex87.annotate.bottom_navigation_screen
 
-import android.content.Context
-import android.graphics.drawable.Drawable
-import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.core.content.ContextCompat
-import it.thefedex.core_ui.utils.UiText
+import it.thefedex87.core_ui.utils.UiText
 import it.thefedex87.annotate.R
 
 sealed class BottomNavScreen(
@@ -31,6 +27,32 @@ sealed class BottomNavScreen(
         icon = Icons.Default.Check,
         title = UiText.StringResource(
             R.string.recents
+        )
+    )
+}
+
+data class BottomNavScreenMenuItem(
+    val route: String,
+    val icon: ImageVector,
+    val title: UiText 
+)
+
+@Composable
+fun PrepareBottomNavBarItems(): List<BottomNavScreenMenuItem> {
+    return listOf(
+        BottomNavScreenMenuItem(
+            route = Routes.NOTEBOOKS,
+            icon = Icons.Default.MenuBook,
+            title = UiText.StringResource(
+                R.string.notebooks
+            )
+        ),
+        BottomNavScreenMenuItem(
+            route = Routes.RECENT_NOTES,
+            icon = ImageVector.vectorResource(R.drawable.clock),
+            title = UiText.StringResource(
+                R.string.notebooks
+            )
         )
     )
 }
