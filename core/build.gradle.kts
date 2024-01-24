@@ -7,10 +7,6 @@ apply {
     from("$rootDir/base-module.gradle")
 }
 
-dependencies {
-
-}
-
 android {
     namespace = "it.thefedex87.core"
 }

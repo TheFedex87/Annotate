@@ -54,6 +54,7 @@ android {
 dependencies {
     // AndroidX
     implementation(AndroidX.coreKtx)
+    implementation(project(Modules.notesPresentation))
     //implementation(AndroidX.lifecycleRuntimeKtx)
 
     // Compose
@@ -85,3 +86,24 @@ dependencies {
     // Project
     implementation(project(Modules.coreUi))
 }
+
+/*plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
+}
+
+apply {
+    from("$rootDir/compose-module.gradle")
+}
+
+android {
+    namespace = ProjectConfig.appId
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}*/

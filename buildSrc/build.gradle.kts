@@ -15,7 +15,7 @@ dependencies {
     implementation("com.android.tools.build:gradle:8.1.1")
 
     // Required to fix a missing dependency error
-    //implementation("com.squareup:javapoet:1.13.0")
+    implementation("com.squareup:javapoet:1.13.0")
 }
 
 
