@@ -1,9 +1,12 @@
 object Build {
-    private const val androidBuildToolsVersion = "8.1.1"
-    const val androidBuildTools = "com.android.tools.build:gradle:$androidBuildToolsVersion"
+    // private const val androidBuildToolsVersion = "8.2.1"
+    // const val androidBuildTools = "com.android.tools.build:gradle:$androidBuildToolsVersion"
 
-    //const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}"
+    // const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}"
 
-    private const val hiltAndroidGradlePluginVersion = "2.46.1"
+    private const val hiltAndroidGradlePluginVersion = DaggerHilt.hiltVersion
     const val hiltAndroidGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$hiltAndroidGradlePluginVersion"
+
+    private const val desugaringVersion = "2.0.4"
+    const val desugaring = "com.android.tools:desugar_jdk_libs_nio:$desugaringVersion"
 }

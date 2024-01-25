@@ -1,4 +1,4 @@
-apply plugin: 'com.android.library'
+//apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
@@ -39,20 +39,23 @@ android {
 }
 
 dependencies {
+    implementation AndroidX.coreKtx
+
     implementation platform(Compose.bom)
     implementation Compose.compiler
     implementation Compose.ui
     implementation Compose.uiToolingPreview
-    implementation Compose.hiltNavigationCompose
     implementation Compose.material3
     implementation Compose.iconExtended
-    //implementation Compose.runtime
-    //implementation Compose.navigation
-    //implementation Compose.viewModelCompose
     implementation Compose.activityCompose
+    implementation Compose.hiltNavigationCompose
+    // implementation Compose.runtime
+    // implementation Compose.navigation
+    // implementation Compose.viewModel
 
     kapt DaggerHilt.hiltCompiler
     implementation DaggerHilt.hiltAndroid
+    kaptAndroidTest DaggerHilt.hiltCompiler
 
     testImplementation Testing.junit4
     testImplementation Testing.junitAndroidExt
@@ -62,6 +65,11 @@ dependencies {
     testImplementation Testing.composeUiTest
     testImplementation Testing.mockk
     testImplementation Testing.mockWebServer*/
+    androidTestImplementation Testing.espresso
+    androidTestImplementation platform(Compose.bom)
+    androidTestImplementation Testing.composeUiTestJunit4
+    androidTestImplementation Testing.hiltTesting
+    testImplementation Testing.coroutinesVersion
 
     androidTestImplementation Testing.junit4
     androidTestImplementation Testing.junitAndroidExt
@@ -73,5 +81,5 @@ dependencies {
     androidTestImplementation Testing.mockWebServer
     androidTestImplementation Testing.hiltTesting*/
 
-    //coreLibraryDesugaring "com.android.tools:desugar_jdk_libs_nio:2.0.4"
+    coreLibraryDesugaring Build.desugaring
 }
