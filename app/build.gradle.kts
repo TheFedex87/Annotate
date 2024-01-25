@@ -1,4 +1,4 @@
-plugins {
+/*plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
@@ -85,9 +85,9 @@ dependencies {
 
     // Project
     implementation(project(Modules.coreUi))
-}
+}*/
 
-/*plugins {
+plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
@@ -101,9 +101,27 @@ apply {
 android {
     namespace = ProjectConfig.appId
 
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-}*/
+}
+
+dependencies {
+    //implementation(AndroidX.lifecycleRuntimeKtx)
+
+    // Project
+    implementation(project(Modules.coreUi))
+    implementation(project(Modules.notesPresentation))
+}
