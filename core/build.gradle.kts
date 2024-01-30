@@ -1,6 +1,7 @@
 plugins {
     `android-library`
     `kotlin-android`
+    `kotlin-kapt`
 }
 
 apply {
@@ -9,4 +10,10 @@ apply {
 
 android {
     namespace = "it.thefedex87.core"
+}
+
+dependencies {
+    implementation(Room.runtime)
+    kapt(Room.compiler)
+    implementation(Room.ktx)
 }
