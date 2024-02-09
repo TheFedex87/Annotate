@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -27,7 +29,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import it.thefedex87.notes_presentation.test.TestUiInModule
+import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
+import it.thefedex87.notes_presentation.block_note.BlockNotesView
+import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,9 +41,11 @@ fun BottomNavigationScreen(
     navController: NavHostController
 ) {
     var bottomNavigationScreenState by remember {
-        mutableStateOf(BottomNavigationScreenState(
-            bottomBarVisible = true
-        ))
+        mutableStateOf(
+            BottomNavigationScreenState(
+                bottomBarVisible = true
+            )
+        )
     }
 
     val snackbarHostState = remember {
@@ -56,14 +62,24 @@ fun BottomNavigationScreen(
                 navController = navController
             )
         }
-    ) {values ->
+    ) { values ->
         NavHost(
             navController = navController,
             startDestination = BottomNavScreen.Notebooks.route,
             modifier = modifier.padding(values)
         ) {
             composable(route = BottomNavScreen.Notebooks.route) {
-                TestUiInModule()
+                val viewModel = hiltViewModel<BlockNotesViewModel>()
+                val blockNotes = viewModel.blockNotes.collectAsStateWithLifecycle(
+                    initialValue = emptyList()
+                ).value
+
+                BlockNotesView(
+                    blockNotes = blockNotes,
+                    onBlockNoteClicked = { id ->
+                        viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
+                    }
+                )
             }
             composable(route = BottomNavScreen.RecentNotes.route) {
                 Text(text = "Recents")
@@ -77,7 +93,7 @@ fun BottomBar(
     bottomBarVisible: Boolean,
     navController: NavHostController
 ) {
-    val screens = PrepareBottomNavBarItems()
+    val screens = prepareBottomNavBarItems()
 
     AnimatedVisibility(
         visible = bottomBarVisible,

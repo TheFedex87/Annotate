@@ -1,6 +1,7 @@
 package it.thefedex87.annotate.bottom_navigation_screen
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.runtime.Composable
@@ -38,11 +39,11 @@ data class BottomNavScreenMenuItem(
 )
 
 @Composable
-fun PrepareBottomNavBarItems(): List<BottomNavScreenMenuItem> {
+fun prepareBottomNavBarItems(): List<BottomNavScreenMenuItem> {
     return listOf(
         BottomNavScreenMenuItem(
             route = Routes.NOTEBOOKS,
-            icon = Icons.Default.MenuBook,
+            icon = Icons.AutoMirrored.Filled.MenuBook,
             title = UiText.StringResource(
                 R.string.notebooks
             )

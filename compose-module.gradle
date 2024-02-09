@@ -49,9 +49,12 @@ dependencies {
     implementation Compose.iconExtended
     implementation Compose.activityCompose
     implementation Compose.hiltNavigationCompose
+    implementation Compose.runtime
     // implementation Compose.runtime
     // implementation Compose.navigation
     // implementation Compose.viewModel
+
+    implementation Coil.coilCompose
 
     kapt DaggerHilt.hiltCompiler
     implementation DaggerHilt.hiltAndroid
