@@ -11,6 +11,7 @@ object Compose {
     const val iconExtended = "androidx.compose.material:material-icons-extended"
     const val uiTooling = "androidx.compose.ui:ui-tooling"
     const val uiTestManifest = "androidx.compose.ui:ui-test-manifest"
+    const val runtime = "androidx.lifecycle:lifecycle-runtime-compose:2.6.2"  // Dependency for collectAsStateWithLifecycle
     // const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-compose"
 
     // Not needed since we are using hilt-navigation-compose
