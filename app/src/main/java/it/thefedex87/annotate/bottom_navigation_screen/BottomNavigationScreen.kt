@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
@@ -40,9 +42,9 @@ fun BottomNavigationScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController
 ) {
-    var bottomNavigationScreenState by remember {
+    var mainScreenState by remember {
         mutableStateOf(
-            BottomNavigationScreenState(
+            MainScreenState(
                 bottomBarVisible = true
             )
         )
@@ -56,9 +58,12 @@ fun BottomNavigationScreen(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
+        topBar = {
+            AppBar(title = mainScreenState.topBarTitle)
+        },
         bottomBar = {
             BottomBar(
-                bottomBarVisible = bottomNavigationScreenState.bottomBarVisible,
+                bottomBarVisible = mainScreenState.bottomBarVisible,
                 navController = navController
             )
         }
@@ -76,6 +81,10 @@ fun BottomNavigationScreen(
 
                 BlockNotesView(
                     blockNotes = blockNotes,
+                    onComposed = {
+                        mainScreenState = it
+                    },
+                    currentMainScreenState = mainScreenState,
                     onBlockNoteClicked = { id ->
                         viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
                     }
@@ -86,6 +95,18 @@ fun BottomNavigationScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AppBar(
+    title: String
+) {
+    TopAppBar(
+        title = {
+            Text(text = title)
+        }
+    )
 }
 
 @Composable

@@ -1,4 +1,4 @@
-package it.thefedex87.annotate.bottom_navigation_screen
+package it.thefedex87.core_ui
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
-data class BottomNavigationScreenState @OptIn(ExperimentalMaterial3Api::class) constructor(
+data class MainScreenState @OptIn(ExperimentalMaterial3Api::class) constructor(
     val topBarColor: Color? = null,
     val topBarVisible: Boolean = false,
     val bottomBarVisible: Boolean = true,

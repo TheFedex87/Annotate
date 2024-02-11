@@ -1,4 +1,4 @@
-package it.thefedex87.core_ui
+package it.thefedex87.core_ui.theme
 
 import androidx.compose.ui.graphics.Color
 

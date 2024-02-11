@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import it.thefedex87.core_ui.LocalSpacing
+import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
 
 @Composable
@@ -30,13 +29,14 @@ fun BlockNote(
     val spacing = LocalSpacing.current
 
     Box(
-        modifier = modifier
-            .clickable {
-               onBlockNoteClicked(id)
-            },
+        modifier = modifier,
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .clickable {
+                    onBlockNoteClicked(id)
+                },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
