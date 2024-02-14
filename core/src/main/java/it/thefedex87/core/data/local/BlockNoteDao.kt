@@ -11,15 +11,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface BlockNoteDao {
-    @Query("SELECT * FROM BlockNoteEntity")
-    fun getBlockNotes(): Flow<BlockNoteEntity>
+    @Query("SELECT * FROM BlockNoteEntity WHERE name LIKE '%' || :query || '%'")
+    fun getBlockNotes(query: String): Flow<List<BlockNoteEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertBlockNote(blockNote: BlockNoteEntity): Long
+    suspend fun insertBlockNote(blockNote: BlockNoteEntity): Long
 
     @Update(onConflict = OnConflictStrategy.ABORT)
-    fun updateBlockNote(blockNote: BlockNoteEntity)
+    suspend fun updateBlockNote(blockNote: BlockNoteEntity)
 
     @Delete
-    fun removeBlockNote(blockNote: BlockNoteEntity)
+    suspend fun removeBlockNote(blockNote: BlockNoteEntity)
+
+    @Query("DELETE FROM BlockNoteEntity")
+    suspend fun removeAllBlockNotes()
 }

@@ -6,8 +6,9 @@ import androidx.room.PrimaryKey
 @Entity
 data class BlockNoteEntity(
     @PrimaryKey
-    val id: Int,
+    val id: Long,
     val name: String,
-    val createdOn: String,
-    val color: String
+    val createdAt: Long,
+    val updatedAt: Long,
+    val color: Int
 )
