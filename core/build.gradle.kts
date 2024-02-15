@@ -16,4 +16,7 @@ dependencies {
     implementation(Room.runtime)
     kapt(Room.compiler)
     implementation(Room.ktx)
+    implementation(Compose.runtime)
+
+    implementation(project(Modules.utils))
 }

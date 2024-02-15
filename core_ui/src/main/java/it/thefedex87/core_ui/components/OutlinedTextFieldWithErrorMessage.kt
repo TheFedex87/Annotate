@@ -10,8 +10,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.core_ui.utils.UiText
 
@@ -21,15 +24,17 @@ fun OutlinedTextFieldWithErrorMessage(
     onValueChanged: (String) -> Unit,
     imeAction: ImeAction,
     label: String,
+    modifier: Modifier = Modifier,
     singleLine: Boolean = true,
-    errorMessage: UiText? = null,
-    modifier: Modifier = Modifier
+    errorMessage: UiText? = null
 ) {
     val spacing = LocalSpacing.current
     Column(modifier = Modifier.fillMaxWidth()) {
         OutlinedTextField(
             value = value,
-            onValueChange = onValueChanged,
+            onValueChange = {
+                onValueChanged(it)
+            },
             singleLine = singleLine,
             keyboardActions = KeyboardActions(
                 onNext = {
@@ -46,7 +51,7 @@ fun OutlinedTextFieldWithErrorMessage(
                 .fillMaxWidth(),
             isError = errorMessage != null,
         )
-        if(errorMessage != null) {
+        if (errorMessage != null) {
             Text(
                 text = errorMessage.asString(LocalContext.current),
                 color = MaterialTheme.colorScheme.error,

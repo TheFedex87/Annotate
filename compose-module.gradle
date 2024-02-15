@@ -85,4 +85,6 @@ dependencies {
     androidTestImplementation Testing.hiltTesting*/
 
     coreLibraryDesugaring Build.desugaring
+
+    implementation Kotlin.immutableList
 }

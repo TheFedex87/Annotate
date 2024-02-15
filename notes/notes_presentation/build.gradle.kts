@@ -13,5 +13,6 @@ dependencies {
     implementation(project(Modules.coreUi))
     implementation(project(Modules.core))
     implementation(project(Modules.notesDomain))
+    implementation(project(Modules.notesUtils))
     implementation(project(Modules.utils))
 }
