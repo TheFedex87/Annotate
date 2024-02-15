@@ -120,8 +120,13 @@ android {
 
 dependencies {
     //implementation(AndroidX.lifecycleRuntimeKtx)
+    implementation(Room.runtime)
 
     // Project
     implementation(project(Modules.coreUi))
+    implementation(project(Modules.core))
+    implementation(project(Modules.utils))
     implementation(project(Modules.notesPresentation))
+    implementation(project(Modules.notesDomain))
+    implementation(project(Modules.notesData))
 }

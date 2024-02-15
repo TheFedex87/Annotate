@@ -1,4 +1,4 @@
-package it.thefedex87.core.data.di
+package it.thefedex87.annotate.di
 
 import android.app.Application
 import androidx.room.Room
@@ -8,15 +8,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import it.thefedex87.core.data.local.AnnotateDatabase
 import it.thefedex87.core.data.local.BlockNoteDao
-import it.thefedex87.core.data.repository.AnnotateRepositoryImpl
-import it.thefedex87.core.domain.repository.AnnotateRepository
+import it.thefedex87.notes_data.repository.NotesRepositoryImpl
+import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.utils.Consts
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ApplicationDataModule {
-
+object AppModule {
     @Singleton
     @Provides
     fun provideAnnotateDatabase(app: Application): AnnotateDatabase =
@@ -33,6 +32,8 @@ object ApplicationDataModule {
 
     @Singleton
     @Provides
-    fun provideAnnotateRepository(blockNoteDao: BlockNoteDao): AnnotateRepository =
-        AnnotateRepositoryImpl(blockNoteDao)
+    fun provideNotesRepository(blockNoteDao: BlockNoteDao): NotesRepository =
+        NotesRepositoryImpl(
+            blockNoteDao = blockNoteDao
+        )
 }

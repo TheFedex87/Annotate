@@ -1,5 +1,6 @@
 package it.thefedex87.annotate.bottom_navigation_screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -30,10 +31,14 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
+import it.thefedex87.notes_presentation.block_note.BlockNotesState
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
+import it.thefedex87.utils.Consts
+import kotlinx.collections.immutable.persistentListOf
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,18 +80,35 @@ fun BottomNavigationScreen(
         ) {
             composable(route = BottomNavScreen.Notebooks.route) {
                 val viewModel = hiltViewModel<BlockNotesViewModel>()
-                val blockNotes = viewModel.blockNotes.collectAsStateWithLifecycle(
-                    initialValue = emptyList()
-                ).value
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                /* val blockNotes by viewModel.blockNotes.collectAsStateWithLifecycle()
+                val query by viewModel.query.collectAsStateWithLifecycle()
+                Log.d(Consts.TAG, "BLock notes list is: ${blockNotes.hashCode()}")
+                val blockNoteClickedLambda = remember<(Long) -> Unit> {
+                    { id ->
+                        viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
+                    }
+                }
+                val onQueryChangedLambda = remember<(String) -> Unit> {
+                    { query ->
+                        viewModel.onEvent(BlockNotesEvent.OnQueryChanged(query))
+                    }
+                } */
 
                 BlockNotesView(
-                    blockNotes = blockNotes,
+                    // blockNotes = blockNotes,
+                    // query = query,
+                    state = state,
                     onComposed = {
                         mainScreenState = it
                     },
                     currentMainScreenState = mainScreenState,
                     onBlockNoteClicked = { id ->
                         viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
+                    },
+                    onQueryChanged = { query ->
+                        viewModel.onEvent(BlockNotesEvent.OnQueryChanged(query))
                     }
                 )
             }

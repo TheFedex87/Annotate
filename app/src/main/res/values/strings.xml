@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Annotate</string>
     <string name="notebooks">Notebooks</string>
     <string name="recents">Recents</string>
 </resources>
