@@ -3,10 +3,20 @@ plugins {
     `kotlin-android`
 }
 
-apply {
-    from("$rootDir/compose-module.gradle")
-}
+apply<MainGradlePlugin>()
 
 android {
     namespace = "it.thefedex87.core_ui"
+
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+    }
+}
+
+dependencies {
+    hilt()
+    compose()
 }

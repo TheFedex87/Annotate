@@ -1,6 +1,5 @@
 package it.thefedex87.annotate.bottom_navigation_screen
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -31,14 +30,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
-import it.thefedex87.notes_presentation.block_note.BlockNotesState
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
-import it.thefedex87.utils.Consts
-import kotlinx.collections.immutable.persistentListOf
 
 
 @OptIn(ExperimentalMaterial3Api::class)

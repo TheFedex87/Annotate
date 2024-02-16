@@ -3,16 +3,26 @@ plugins {
     `kotlin-android`
 }
 
-apply(from = "$rootDir/compose-module.gradle")
+apply<MainGradlePlugin>()
 
 android {
     namespace = "it.thefedex87.notes_presentation"
+
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = Compose.composeCompilerVersion
+    }
 }
 
 dependencies {
-    implementation(project(Modules.coreUi))
-    implementation(project(Modules.core))
-    implementation(project(Modules.notesDomain))
-    implementation(project(Modules.notesUtils))
-    implementation(project(Modules.utils))
+    compose()
+    hilt()
+
+    coreUi()
+    core()
+    notesDomain()
+    notesUtils()
+    utils()
 }

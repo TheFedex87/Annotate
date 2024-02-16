@@ -3,12 +3,14 @@ plugins {
     `kotlin-android`
 }
 
-apply(from = "$rootDir/base-module.gradle")
+apply<MainGradlePlugin>()
 
 android {
     namespace = "it.thefedex87.notes_domain"
 }
 
 dependencies {
-    implementation(project(Modules.core))
+    hilt()
+
+    core()
 }

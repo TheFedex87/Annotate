@@ -1,22 +1,19 @@
 plugins {
     `android-library`
     `kotlin-android`
-    `kotlin-kapt`
 }
 
-apply {
-    from("$rootDir/base-module.gradle")
-}
+apply<MainGradlePlugin>()
 
 android {
     namespace = "it.thefedex87.core"
 }
 
 dependencies {
-    implementation(Room.runtime)
-    kapt(Room.compiler)
-    implementation(Room.ktx)
-    implementation(Compose.runtime)
+    room()
+    hilt()
+    composeRuntime()
 
-    implementation(project(Modules.utils))
+    // Projects
+    utils()
 }

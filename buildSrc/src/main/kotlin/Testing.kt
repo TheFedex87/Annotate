@@ -1,3 +1,5 @@
+import org.gradle.api.artifacts.dsl.DependencyHandler
+
 object Testing {
     private const val junitVersion = "4.13.2"
     const val junit4 = "junit:junit:$junitVersion"
@@ -14,4 +16,18 @@ object Testing {
     const val coroutinesVersion = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineTestVersion"
 
     const val hiltTesting = "com.google.dagger:hilt-android-testing:${DaggerHilt.hiltVersion}"
+}
+
+fun DependencyHandler.test() {
+    testImplementation(Testing.junit4)
+    testImplementation(Testing.junitAndroidExt)
+    testImplementation(Testing.coroutinesVersion)
+}
+
+fun DependencyHandler.androidTest() {
+    androidTestImplementation(Testing.junit4)
+    androidTestImplementation(Testing.junitAndroidExt)
+    androidTestImplementation(Testing.espresso)
+    androidTestImplementation(Testing.composeUiTestJunit4)
+    androidTestImplementation(Testing.hiltTesting)
 }
