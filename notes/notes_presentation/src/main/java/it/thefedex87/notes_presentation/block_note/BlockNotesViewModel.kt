@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
+import it.thefedex87.notes_domain.model.BlockNoteModel
+import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_utils.NotesConsts
 import it.thefedex87.utils.Consts
@@ -14,10 +16,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -46,15 +47,34 @@ class BlockNotesViewModel @Inject constructor(
         persistentListOf()
     )*/
 
-    private val _query = savedStateHandle.getStateFlow(
+    /*private val _query = savedStateHandle.getStateFlow(
         NotesConsts.QUERY_SAVED_STATE_HANDLE_KEY,
         ""
-    )
-    private val blockNotes = _query.flatMapLatest {
+    )*/
+    /*private val blockNotes = _query.flatMapLatest {
         repository.blockNotes(it).distinctUntilChanged()
-    }
+    }*/
 
     val state = combine(
+        repository.blockNotes(),
+        repository.notesPreferences
+    ) { (blockNotes, notesPreferences) ->
+        blockNotes as List<BlockNoteModel>
+        notesPreferences as NotesPreferences
+        Pair(blockNotes, notesPreferences)
+    }.mapLatest { (blockNotes, notesPreferences)  ->
+        BlockNotesState(
+            blockNotes = blockNotes,
+            visualizationType = notesPreferences.blockNotesVisualizationType
+        )
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(),
+        BlockNotesState()
+    )
+
+
+    /*val state = combine(
         blockNotes,
         _query
     ) { (blockNotes, query) ->
@@ -67,14 +87,13 @@ class BlockNotesViewModel @Inject constructor(
             "Received list of block notes: ${blockNotes.map { it.id }} with hash ${blockNotes.hashCode()} and query: ${_query.value}"
         )
         BlockNotesState(
-            blockNotes = blockNotes,
-            userInputTest = query
+            blockNotes = blockNotes
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
         BlockNotesState()
-    )
+    )*/
 
     init {
         viewModelScope.launch {
@@ -114,6 +133,10 @@ class BlockNotesViewModel @Inject constructor(
 
                 is BlockNotesEvent.OnQueryChanged -> {
                     savedStateHandle[NotesConsts.QUERY_SAVED_STATE_HANDLE_KEY] = event.query
+                }
+
+                is BlockNotesEvent.OnVisualizationTypeChanged -> {
+                    repository.updateBlockNotesVisualizationType(event.visualizationType)
                 }
             }
         }

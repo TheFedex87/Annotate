@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -19,7 +20,7 @@ import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
 
 @Composable
-fun BlockNote(
+fun BlockNoteListTile(
     id: Long,
     name: String,
     color: Int,
@@ -28,28 +29,22 @@ fun BlockNote(
 ) {
     val spacing = LocalSpacing.current
 
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
+    Row(
+        modifier = modifier
+            .clickable {
+                onBlockNoteClicked(id)
+            },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(
+        Image(
+            painter = painterResource(id = R.drawable.book),
+            contentDescription = name,
+            colorFilter = ColorFilter.tint(
+                color = Color(color)
+            ),
             modifier = Modifier
-                .clickable {
-                    onBlockNoteClicked(id)
-                },
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.book),
-                contentDescription = name,
-                colorFilter = ColorFilter.tint(
-                    color = Color(color)
-                ),
-                modifier = Modifier
-                    .size(140.dp)
-                    .padding(spacing.spaceMedium)
-            )
-            Text(text = name, style = MaterialTheme.typography.bodyMedium)
-        }
+                .padding(spacing.spaceMedium)
+        )
+        Text(text = name, style = MaterialTheme.typography.bodyMedium)
     }
 }
