@@ -12,7 +12,6 @@ android {
 dependencies {
     room()
     hilt()
-    composeRuntime()
 
     // Projects
     utils()

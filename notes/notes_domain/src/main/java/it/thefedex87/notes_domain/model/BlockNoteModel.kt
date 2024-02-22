@@ -1,8 +1,8 @@
-package it.thefedex87.core.domain.model
+package it.thefedex87.notes_domain.model
 
 import java.time.LocalDate
 
-data class BlockNoteDomainModel(
+data class BlockNoteModel(
     val id: Long,
     val name: String,
     val color: Int,
