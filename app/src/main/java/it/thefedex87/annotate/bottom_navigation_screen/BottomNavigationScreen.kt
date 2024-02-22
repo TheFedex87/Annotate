@@ -59,7 +59,10 @@ fun BottomNavigationScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
-            AppBar(title = mainScreenState.topBarTitle)
+            AppBar(
+                title = mainScreenState.topBarTitle,
+                actions = mainScreenState.topBarActions ?: {}
+            )
         },
         bottomBar = {
             BottomBar(
@@ -99,12 +102,7 @@ fun BottomNavigationScreen(
                         mainScreenState = it
                     },
                     currentMainScreenState = mainScreenState,
-                    onBlockNoteClicked = { id ->
-                        viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
-                    },
-                    onQueryChanged = { query ->
-                        viewModel.onEvent(BlockNotesEvent.OnQueryChanged(query))
-                    }
+                    onBlockNotesEvent = viewModel::onEvent
                 )
             }
             composable(route = BottomNavScreen.RecentNotes.route) {
@@ -117,12 +115,14 @@ fun BottomNavigationScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    title: String
+    title: String,
+    actions: @Composable RowScope.() -> Unit = { },
 ) {
     TopAppBar(
         title = {
             Text(text = title)
-        }
+        },
+        actions = actions
     )
 }
 
