@@ -34,10 +34,6 @@ fun DependencyHandler.coil() {
     implementation(Compose.coilCompose)
 }
 
-fun DependencyHandler.composeRuntime() {
-    implementation(Compose.runtime)
-}
-
 fun DependencyHandler.compose() {
     implementation(platform(Compose.bom))
     implementation(Compose.compiler)
@@ -47,5 +43,5 @@ fun DependencyHandler.compose() {
     implementation(Compose.iconExtended)
     implementation(Compose.activityCompose)
     implementation(Compose.hiltNavigationCompose)
-    composeRuntime()
+    implementation(Compose.runtime)
 }

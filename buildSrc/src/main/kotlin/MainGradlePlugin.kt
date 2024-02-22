@@ -14,7 +14,8 @@ class MainGradlePlugin: Plugin<Project> {
     }
 
     private fun applyDependencies(project: Project) {
-        project.dependencies.implementation(AndroidX.coreKtx)
+        project.dependencies.coreKtx()
+        project.dependencies.desugaring()
     }
 
     private fun applyPlugins(project: Project) {
@@ -61,6 +62,7 @@ class MainGradlePlugin: Plugin<Project> {
                 compileOptions {
                     sourceCompatibility = JavaVersion.VERSION_18
                     targetCompatibility = JavaVersion.VERSION_18
+                    isCoreLibraryDesugaringEnabled = true
                 }
                 project.tasks.withType(KotlinCompile::class.java).configureEach {
                     kotlinOptions {
