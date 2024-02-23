@@ -111,7 +111,9 @@ fun BottomNavigationScreen(
                     },
                     currentMainScreenState = mainScreenState,
                     onBlockNotesEvent = viewModel::onEvent,
-                    onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent
+                    onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent,
+                    uiEvent = viewModel.uiEvent,
+                    snackbarHostState = snackbarHostState
                 )
             }
             composable(route = BottomNavScreen.RecentNotes.route) {

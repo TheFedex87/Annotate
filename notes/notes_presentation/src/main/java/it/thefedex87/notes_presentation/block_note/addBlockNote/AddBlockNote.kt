@@ -109,13 +109,17 @@ fun AddBlockNote(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = { /*TODO*/ }) {
+                    TextButton(onClick = {
+                        onAddBlockNoteEvent(AddBlockNoteEvent.OnDismiss)
+                    }) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
                     Spacer(modifier = Modifier.width(spacing.spaceSmall))
                     TextButton(
                         enabled = state.name.isNotBlank() && state.name.isNotEmpty(),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            onAddBlockNoteEvent(AddBlockNoteEvent.OnConfirmClicked)
+                        }) {
                         Text(text = stringResource(id = R.string.create))
                     }
                 }

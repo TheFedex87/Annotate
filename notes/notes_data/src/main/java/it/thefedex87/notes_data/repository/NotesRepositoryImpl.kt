@@ -1,5 +1,6 @@
 package it.thefedex87.notes_data.repository
 
+import android.util.Log
 import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.entity.BlockNoteEntity
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
@@ -7,10 +8,14 @@ import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
+import it.thefedex87.utils.Consts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.lang.Exception
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 class NotesRepositoryImpl(
     val blockNoteDao: BlockNoteDao,
@@ -29,8 +34,8 @@ class NotesRepositoryImpl(
                 id = it.id,
                 name = it.name,
                 color = it.color,
-                createdAt = Instant.ofEpochMilli(it.createdAt).atZone(ZoneId.systemDefault()).toLocalDate(),
-                updatedAt = Instant.ofEpochMilli(it.updatedAt).atZone(ZoneId.systemDefault()).toLocalDate()
+                createdAt = LocalDateTime.ofEpochSecond(it.createdAt, 0, ZoneOffset.UTC),
+                updatedAt = LocalDateTime.ofEpochSecond(it.updatedAt, 0, ZoneOffset.UTC)
             )
         }
     }
@@ -40,14 +45,20 @@ class NotesRepositoryImpl(
     }
 
     override suspend fun addBlockNote(blockNote: BlockNoteDomainModel) {
-        blockNoteDao.insertBlockNote(
-            BlockNoteEntity(
-                id = blockNote.id,
-                name = blockNote.name,
-                color = blockNote.color,
-                createdAt = blockNote.createdAt.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                updatedAt = blockNote.updatedAt.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+        try {
+            blockNoteDao.insertBlockNote(
+                BlockNoteEntity(
+                    id = blockNote.id,
+                    name = blockNote.name,
+                    color = blockNote.color,
+                    createdAt = blockNote.createdAt.toEpochSecond(ZoneOffset.UTC),
+                    updatedAt = blockNote.updatedAt.toEpochSecond(ZoneOffset.UTC),
+                )
             )
-        )
+        }
+        catch (ex: Exception) {
+            Log.d(Consts.TAG, "Error on saving BlockNote")
+            throw ex
+        }
     }
 }
