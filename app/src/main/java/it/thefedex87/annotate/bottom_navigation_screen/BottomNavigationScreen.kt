@@ -14,12 +14,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,13 +58,17 @@ fun BottomNavigationScreen(
         SnackbarHostState()
     }
 
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
             AppBar(
                 title = mainScreenState.topBarTitle,
+                scrollBehavior = scrollBehavior,
                 actions = mainScreenState.topBarActions ?: {}
             )
         },
@@ -102,7 +110,8 @@ fun BottomNavigationScreen(
                         mainScreenState = it
                     },
                     currentMainScreenState = mainScreenState,
-                    onBlockNotesEvent = viewModel::onEvent
+                    onBlockNotesEvent = viewModel::onEvent,
+                    onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent
                 )
             }
             composable(route = BottomNavScreen.RecentNotes.route) {
@@ -116,13 +125,16 @@ fun BottomNavigationScreen(
 @Composable
 fun AppBar(
     title: String,
+    scrollBehavior: TopAppBarScrollBehavior,
     actions: @Composable RowScope.() -> Unit = { },
 ) {
+
     TopAppBar(
         title = {
             Text(text = title)
         },
-        actions = actions
+        actions = actions,
+        scrollBehavior = scrollBehavior
     )
 }
 

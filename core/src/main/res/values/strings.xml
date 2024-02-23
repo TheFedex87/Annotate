@@ -3,4 +3,6 @@
     <string name="app_name">Annotate</string>
     <string name="list_view">View in list</string>
     <string name="grid_view">View in grid</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
 </resources>

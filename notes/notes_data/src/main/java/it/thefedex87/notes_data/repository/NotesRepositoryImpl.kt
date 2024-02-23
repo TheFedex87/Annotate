@@ -1,12 +1,9 @@
 package it.thefedex87.notes_data.repository
 
-import androidx.datastore.preferences.preferencesDataStore
 import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.entity.BlockNoteEntity
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
-import it.thefedex87.notes_data.mappers.toBlockNoteModel
-import it.thefedex87.notes_domain.model.BlockNoteModel
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
@@ -26,7 +23,7 @@ class NotesRepositoryImpl(
         notesPreferencesManager.updateBlockNotesVisualizationType(visualizationType)
     }
 
-    override fun blockNotes(query: String): Flow<List<BlockNoteModel>> = blockNoteDao.getBlockNotes(query).map {
+    override fun blockNotes(query: String): Flow<List<BlockNoteDomainModel>> = blockNoteDao.getBlockNotes(query).map {
         it.map {
             BlockNoteDomainModel(
                 id = it.id,
@@ -34,7 +31,7 @@ class NotesRepositoryImpl(
                 color = it.color,
                 createdAt = Instant.ofEpochMilli(it.createdAt).atZone(ZoneId.systemDefault()).toLocalDate(),
                 updatedAt = Instant.ofEpochMilli(it.updatedAt).atZone(ZoneId.systemDefault()).toLocalDate()
-            ).toBlockNoteModel()
+            )
         }
     }
 
