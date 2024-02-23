@@ -7,13 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
-import it.thefedex87.notes_domain.model.BlockNoteModel
-import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.repository.NotesRepository
-import it.thefedex87.notes_utils.NotesConsts
+import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
+import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.utils.Consts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapLatest
@@ -55,17 +55,18 @@ class BlockNotesViewModel @Inject constructor(
         repository.blockNotes(it).distinctUntilChanged()
     }*/
 
+    private val _state = MutableStateFlow(BlockNotesState())
+
     val state = combine(
+        _state,
         repository.blockNotes(),
         repository.notesPreferences
-    ) { (blockNotes, notesPreferences) ->
-        blockNotes as List<BlockNoteModel>
-        notesPreferences as NotesPreferences
-        Pair(blockNotes, notesPreferences)
-    }.mapLatest { (blockNotes, notesPreferences)  ->
-        BlockNotesState(
-            blockNotes = blockNotes,
-            visualizationType = notesPreferences.blockNotesVisualizationType
+    ) { state, blockNotes, notesPreferences ->
+        Triple(state, blockNotes, notesPreferences)
+    }.mapLatest { (state, blockNotes, notesPreferences)  ->
+        state.copy(
+            blockNotes = blockNotes.map { it.toBlockNoteUiModel() },
+            visualizationType = notesPreferences.blockNotesVisualizationType,
         )
     }.stateIn(
         viewModelScope,
@@ -124,6 +125,28 @@ class BlockNotesViewModel @Inject constructor(
         }
     }
 
+    fun onAddBlockNoteEvent(event: AddBlockNoteEvent) {
+        viewModelScope.launch {
+            when (event) {
+                is AddBlockNoteEvent.OnConfirmClicked -> {
+
+                }
+                is AddBlockNoteEvent.OnDismiss -> {
+
+                }
+                is AddBlockNoteEvent.OnNameChanged -> {
+                    _state.update {
+                        it.copy(
+                            addBlockNoteState = it.addBlockNoteState.copy(
+                                name = event.name
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onEvent(event: BlockNotesEvent) {
         viewModelScope.launch {
             when (event) {
@@ -131,12 +154,22 @@ class BlockNotesViewModel @Inject constructor(
                     Log.d(Consts.TAG, "Clicked on block note: ${event.id}")
                 }
 
-                is BlockNotesEvent.OnQueryChanged -> {
+                /*is BlockNotesEvent.OnQueryChanged -> {
                     savedStateHandle[NotesConsts.QUERY_SAVED_STATE_HANDLE_KEY] = event.query
-                }
+                }*/
 
                 is BlockNotesEvent.OnVisualizationTypeChanged -> {
                     repository.updateBlockNotesVisualizationType(event.visualizationType)
+                }
+
+                is BlockNotesEvent.OnAddNewBlockNoteClicked -> {
+                    _state.update {
+                        it.copy(
+                            addBlockNoteState = it.addBlockNoteState.copy(
+                                showDialog = true
+                            )
+                        )
+                    }
                 }
             }
         }

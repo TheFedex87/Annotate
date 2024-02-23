@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="create_new_block_note_title">Create a new block note</string>
+    <string name="insert_name_here">Insert name here</string>
+    <string name="add_blocknote">Add new block note</string>
+    <string name="cancel">Cancel</string>
+</resources>

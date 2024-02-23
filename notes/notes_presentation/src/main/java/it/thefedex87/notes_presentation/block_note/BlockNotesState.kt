@@ -2,11 +2,13 @@ package it.thefedex87.notes_presentation.block_note
 
 import androidx.compose.runtime.Immutable
 import it.thefedex87.core.domain.model.VisualizationType
-import it.thefedex87.notes_domain.model.BlockNoteModel
+import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteState
+import it.thefedex87.notes_presentation.block_note.model.BlockNoteUiModel
 
 @Immutable
 data class BlockNotesState(
-    val blockNotes: List<BlockNoteModel> = emptyList(),
+    val blockNotes: List<BlockNoteUiModel> = emptyList(),
     val isLoading: Boolean = false,
-    val visualizationType: VisualizationType = VisualizationType.Grid
+    val visualizationType: VisualizationType = VisualizationType.Grid,
+    val addBlockNoteState: AddBlockNoteState = AddBlockNoteState()
 )

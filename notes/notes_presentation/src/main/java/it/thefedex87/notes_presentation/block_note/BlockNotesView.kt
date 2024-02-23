@@ -1,9 +1,7 @@
 package it.thefedex87.notes_presentation.block_note
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -11,8 +9,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.AddToHomeScreen
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,8 +24,11 @@ import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.theme.LocalSpacing
+import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNote
+import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
+import it.thefedex87.notes_presentation.R as NotesPresentationR
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -36,6 +37,7 @@ fun BlockNotesView(
     // blockNotes: ImmutableList<BlockNoteDomainModel>,
     // query: String,
     onBlockNotesEvent: (BlockNotesEvent) -> Unit,
+    onAddBlockNoteEvent: (AddBlockNoteEvent) -> Unit,
     onComposed: (MainScreenState) -> Unit,
     currentMainScreenState: MainScreenState,
     modifier: Modifier = Modifier
@@ -48,6 +50,16 @@ fun BlockNotesView(
                 topBarTitle = appBarTitle,
                 topBarVisible = true,
                 topBarActions = {
+                    IconButton(onClick = {
+                        onBlockNotesEvent(
+                            BlockNotesEvent.OnAddNewBlockNoteClicked
+                        )
+                    }, modifier = Modifier.size(48.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(id = NotesPresentationR.string.add_blocknote)
+                        )
+                    }
                     when (state.visualizationType) {
                         VisualizationType.Grid -> {
                             IconButton(onClick = {
@@ -81,6 +93,13 @@ fun BlockNotesView(
                     }
                 }
             )
+        )
+    }
+
+    if (state.addBlockNoteState.showDialog) {
+        AddBlockNote(
+            state = state.addBlockNoteState,
+            onAddBlockNoteEvent = onAddBlockNoteEvent
         )
     }
 
