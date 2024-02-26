@@ -2,6 +2,7 @@ package it.thefedex87.notes_presentation.block_note
 
 import android.graphics.Color
 import android.util.Log
+import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import it.thefedex87.core_ui.utils.UiText
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
+import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteState
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.utils.Consts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -136,14 +138,13 @@ class BlockNotesViewModel @Inject constructor(
             when (event) {
                 is AddBlockNoteEvent.OnConfirmClicked -> {
                     val name = _state.value.addBlockNoteState.name
+                    val color = _state.value.addBlockNoteState.selectedColor.toArgb()
+
                     Log.d(Consts.TAG, "Adding a new block note: $name")
 
                     _state.update {
                         it.copy(
-                            addBlockNoteState = it.addBlockNoteState.copy(
-                                name = "",
-                                showDialog = false
-                            )
+                            addBlockNoteState = AddBlockNoteState()
                         )
                     }
 
@@ -151,12 +152,7 @@ class BlockNotesViewModel @Inject constructor(
                         repository.addBlockNote(
                             BlockNoteDomainModel(
                                 name = name,
-                                color = Color.argb(
-                                    255,
-                                    Random.nextInt(0, 255),
-                                    Random.nextInt(0, 255),
-                                    Random.nextInt(0, 255)
-                                ),
+                                color = color,
                                 createdAt = LocalDateTime.now(),
                                 updatedAt = LocalDateTime.now()
                             )
@@ -181,6 +177,15 @@ class BlockNotesViewModel @Inject constructor(
                         it.copy(
                             addBlockNoteState = it.addBlockNoteState.copy(
                                 name = event.name
+                            )
+                        )
+                    }
+                }
+                is AddBlockNoteEvent.OnSelectedNewColor -> {
+                    _state.update {
+                        it.copy(
+                            addBlockNoteState = it.addBlockNoteState.copy(
+                                selectedColor = event.color
                             )
                         )
                     }

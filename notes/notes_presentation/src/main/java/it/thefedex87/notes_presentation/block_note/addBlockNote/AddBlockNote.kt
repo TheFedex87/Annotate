@@ -37,6 +37,7 @@ import androidx.compose.ui.window.Dialog
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R as NotesPresentationR
 import it.thefedex87.core.R
+import it.thefedex87.core_ui.components.ColorPicker
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -109,6 +110,12 @@ fun AddBlockNote(
                         .onFocusChanged {
                             isFocused = it.hasFocus
                         }
+                )
+                ColorPicker(
+                    onSelectNewColor = {
+                        onAddBlockNoteEvent(AddBlockNoteEvent.OnSelectedNewColor(it))
+                    },
+                    selectedColor = state.selectedColor
                 )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
