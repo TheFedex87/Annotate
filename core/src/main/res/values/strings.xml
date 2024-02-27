@@ -5,4 +5,7 @@
     <string name="grid_view">View in grid</string>
     <string name="cancel">Cancel</string>
     <string name="create">Create</string>
+    <string name="edit">Edit</string>
+    <string name="remove">Remove</string>
+    <string name="delete">Delete</string>
 </resources>
