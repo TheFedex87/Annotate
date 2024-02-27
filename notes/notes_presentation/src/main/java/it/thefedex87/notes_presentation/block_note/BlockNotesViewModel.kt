@@ -1,7 +1,7 @@
 package it.thefedex87.notes_presentation.block_note
 
-import android.graphics.Color
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -15,20 +15,22 @@ import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteState
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
+import it.thefedex87.notes_utils.NotesConsts
 import it.thefedex87.utils.Consts
+import it.thefedex87.utils.Quadruple
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlin.random.Random
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -61,17 +63,25 @@ class BlockNotesViewModel @Inject constructor(
         repository.blockNotes(it).distinctUntilChanged()
     }*/
 
-    private val _state = MutableStateFlow(BlockNotesState())
+    private val _state = MutableStateFlow(
+        BlockNotesState()
+    )
     val state = combine(
         _state,
         repository.blockNotes(),
-        repository.notesPreferences
-    ) { state, blockNotes, notesPreferences ->
-        Triple(state, blockNotes, notesPreferences)
-    }.mapLatest { (state, blockNotes, notesPreferences)  ->
+        repository.notesPreferences,
+        savedStateHandle.getStateFlow(NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY, AddBlockNoteState())
+    ) { state, blockNotes, notesPreferences, addBlockNotesState ->
+        Quadruple(state, blockNotes, notesPreferences, addBlockNotesState)
+    }.mapLatest { (state, blockNotes, notesPreferences, addBlockNotesState) ->
         state.copy(
-            blockNotes = blockNotes.map { it.toBlockNoteUiModel() },
+            blockNotes = blockNotes.map {
+                it.toBlockNoteUiModel(
+                    state.showOptionsId == it.id
+                )
+            },
             visualizationType = notesPreferences.blockNotesVisualizationType,
+            addBlockNoteState = addBlockNotesState
         )
     }.stateIn(
         viewModelScope,
@@ -81,7 +91,7 @@ class BlockNotesViewModel @Inject constructor(
 
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent
-        .consumeAsFlow()
+        .receiveAsFlow()
 
 
     /*val state = combine(
@@ -138,57 +148,49 @@ class BlockNotesViewModel @Inject constructor(
             when (event) {
                 is AddBlockNoteEvent.OnConfirmClicked -> {
                     val name = _state.value.addBlockNoteState.name
-                    val color = _state.value.addBlockNoteState.selectedColor.toArgb()
+                    val color = _state.value.addBlockNoteState.selectedColor
+                    val id = _state.value.addBlockNoteState.id
 
-                    Log.d(Consts.TAG, "Adding a new block note: $name")
-
-                    _state.update {
-                        it.copy(
-                            addBlockNoteState = AddBlockNoteState()
-                        )
-                    }
+                    Log.d(Consts.TAG, "Adding/edit a new block note: $name")
 
                     try {
-                        repository.addBlockNote(
+                        repository.addEditBlockNote(
                             BlockNoteDomainModel(
+                                id = id,
                                 name = name,
                                 color = color,
                                 createdAt = LocalDateTime.now(),
                                 updatedAt = LocalDateTime.now()
                             )
                         )
+
+                        savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] = AddBlockNoteState(
+                            showDialog = false
+                        )
                     } catch (ex: Exception) {
                         _uiEvent.send(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_adding_block_note)))
                     }
 
                 }
+
                 is AddBlockNoteEvent.OnDismiss -> {
-                    _state.update {
-                        it.copy(
-                            addBlockNoteState = it.addBlockNoteState.copy(
-                                name = "",
-                                showDialog = false
-                            )
-                        )
-                    }
+                    savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] = AddBlockNoteState(
+                        showDialog = false
+                    )
                 }
+
                 is AddBlockNoteEvent.OnNameChanged -> {
-                    _state.update {
-                        it.copy(
-                            addBlockNoteState = it.addBlockNoteState.copy(
-                                name = event.name
-                            )
+                    savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
+                        savedStateHandle.get<AddBlockNoteState>(NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY)?.copy(
+                            name = event.name
                         )
-                    }
                 }
+
                 is AddBlockNoteEvent.OnSelectedNewColor -> {
-                    _state.update {
-                        it.copy(
-                            addBlockNoteState = it.addBlockNoteState.copy(
-                                selectedColor = event.color
-                            )
+                    savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
+                        savedStateHandle.get<AddBlockNoteState>(NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY)?.copy(
+                            selectedColor = event.color.toArgb()
                         )
-                    }
                 }
             }
         }
@@ -210,10 +212,69 @@ class BlockNotesViewModel @Inject constructor(
                 }
 
                 is BlockNotesEvent.OnAddNewBlockNoteClicked -> {
+                    savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] = AddBlockNoteState(
+                        showDialog = true
+                    )
+                }
+
+                is BlockNotesEvent.OnShowBlockNoteOptionsClicked -> {
                     _state.update {
                         it.copy(
-                            addBlockNoteState = it.addBlockNoteState.copy(
-                                showDialog = true
+                            showOptionsId = event.id
+                        )
+                    }
+                }
+
+                is BlockNotesEvent.OnDismissBlockNoteOptions -> {
+                    _state.update {
+                        it.copy(
+                            showOptionsId = null
+                        )
+                    }
+                }
+
+                is BlockNotesEvent.OnEditBlockNoteClicked -> {
+                    repository.blockNotes().first().firstOrNull { it.id == event.id }
+                        ?.let { blockNote ->
+                            savedStateHandle[NotesConsts.EDITING_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] = AddBlockNoteState(
+                                id = blockNote.id,
+                                name = blockNote.name,
+                                showDialog = true,
+                                selectedColor = blockNote.color
+                            )
+                            _state.update {
+                                it.copy(
+                                    showOptionsId = null
+                                )
+                            }
+                        }
+                }
+
+                is BlockNotesEvent.OnDeleteBlockNoteClicked -> {
+                    repository.blockNotes().first().firstOrNull { it.id == event.id }
+                        ?.let { blockNote ->
+                            _state.update {
+                                it.copy(
+                                    blockNoteDeleteState = BlockNoteDeleteState(
+                                        showDeleteDialog = true,
+                                        deleteBlockNoteName = blockNote.name
+                                    ),
+                                    showOptionsId = null
+                                )
+                            }
+                        }
+                }
+
+                is BlockNotesEvent.OnDeleteBlockNoteConfirmed -> {
+
+                }
+
+                is BlockNotesEvent.OnDeleteBlockNoteDismissed -> {
+                    _state.update {
+                        it.copy(
+                            blockNoteDeleteState = BlockNoteDeleteState(
+                                showDeleteDialog = false,
+                                deleteBlockNoteName = ""
                             )
                         )
                     }

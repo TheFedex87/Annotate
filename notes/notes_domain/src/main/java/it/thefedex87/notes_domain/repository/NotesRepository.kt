@@ -9,6 +9,7 @@ interface NotesRepository {
     val notesPreferences: Flow<NotesPreferences>
     suspend fun updateBlockNotesVisualizationType(visualizationType: VisualizationType)
     fun blockNotes(query: String = ""): Flow<List<BlockNoteDomainModel>>
-    suspend fun addBlockNote(blockNote: BlockNoteDomainModel)
+    suspend fun addEditBlockNote(blockNote: BlockNoteDomainModel)
+    suspend fun removeBlockNote(blockNote: BlockNoteDomainModel)
     suspend fun removeAllBlockNotes()
 }

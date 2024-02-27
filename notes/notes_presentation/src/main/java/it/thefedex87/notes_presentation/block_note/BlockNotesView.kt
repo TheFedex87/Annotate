@@ -1,5 +1,6 @@
 package it.thefedex87.notes_presentation.block_note
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -27,12 +28,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core_ui.MainScreenState
+import it.thefedex87.core_ui.components.SafeDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNote
 import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
+import it.thefedex87.utils.Consts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -55,7 +58,7 @@ fun BlockNotesView(
     val spacing = LocalSpacing.current
     val context = LocalContext.current
 
-    composeMainScreenState(
+    ComposeMainScreenState(
         state = state,
         currentMainScreenState = currentMainScreenState,
         onComposed = onComposed,
@@ -64,13 +67,15 @@ fun BlockNotesView(
 
     LaunchedEffect(key1 = true) {
         uiEvent.onEach {
-            when(it) {
+            Log.d(Consts.TAG, "Received new ui event in BlockNotesView: $it")
+            when (it) {
                 is UiEvent.ShowSnackBar -> {
                     snackbarHostState?.showSnackbar(
                         message = it.message.asString(context),
                         duration = SnackbarDuration.Short
                     )
                 }
+
                 else -> Unit
             }
         }.launchIn(this)
@@ -80,6 +85,20 @@ fun BlockNotesView(
         AddBlockNote(
             state = state.addBlockNoteState,
             onAddBlockNoteEvent = onAddBlockNoteEvent
+        )
+    } else if (state.blockNoteDeleteState.showDeleteDialog) {
+        SafeDeleteDialog(
+            title = stringResource(id = R.string.delete),
+            body = String.format(
+                stringResource(id = NotesPresentationR.string.remove_block_note_body_dialog),
+                state.blockNoteDeleteState.deleteBlockNoteName
+            ),
+            validDeletionName = state.blockNoteDeleteState.deleteBlockNoteName,
+            onConfirmClicked = { },
+            onCancelClicked = {
+                onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteDismissed)
+            },
+            confirmNamePlaceholder = stringResource(id = NotesPresentationR.string.insert_block_note_name)
         )
     }
 
@@ -91,16 +110,29 @@ fun BlockNotesView(
             items(
                 state.blockNotes,
                 key = {
-                    it.id!!
+                    it.id
                 }
             ) { blockNote ->
                 BlockNoteGridTile(
-                    id = blockNote.id!!,
+                    id = blockNote.id,
                     name = blockNote.name,
                     color = blockNote.color,
                     onBlockNoteClicked = {
                         onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(it))
-                    }
+                    },
+                    onBlockNoteOptionsClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
+                    },
+                    onDismissOptionsRequested = {
+                        onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
+                    },
+                    onEditBlockNoteClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
+                    },
+                    onRemoveBlockNoteClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
+                    },
+                    showOptions = blockNote.showOptions
                 )
             }
         }
@@ -111,11 +143,11 @@ fun BlockNotesView(
             items(
                 state.blockNotes,
                 key = {
-                    it.id!!
+                    it.id
                 }
             ) { blockNote ->
                 BlockNoteListTile(
-                    id = blockNote.id!!,
+                    id = blockNote.id,
                     name = blockNote.name,
                     color = blockNote.color,
                     onBlockNoteClicked = {
@@ -129,7 +161,7 @@ fun BlockNotesView(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun composeMainScreenState(
+private fun ComposeMainScreenState(
     state: BlockNotesState,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
@@ -178,7 +210,7 @@ private fun composeMainScreenState(
                                 )
                             }, modifier = Modifier.size(48.dp)) {
                                 Icon(
-                                    imageVector =  Icons.Default.GridView,
+                                    imageVector = Icons.Default.GridView,
                                     contentDescription = stringResource(id = R.string.grid_view)
                                 )
                             }

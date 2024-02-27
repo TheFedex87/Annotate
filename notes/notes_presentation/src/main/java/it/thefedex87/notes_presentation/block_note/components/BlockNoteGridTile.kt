@@ -6,6 +6,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,9 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
+import it.thefedex87.core.R as coreResources
 
 @Composable
 fun BlockNoteGridTile(
@@ -24,12 +33,17 @@ fun BlockNoteGridTile(
     name: String,
     color: Int,
     onBlockNoteClicked: (Long) -> Unit,
+    onBlockNoteOptionsClicked: (Long) -> Unit,
+    onDismissOptionsRequested: () -> Unit,
+    onEditBlockNoteClicked:(Long) -> Unit,
+    onRemoveBlockNoteClicked: (Long) -> Unit,
+    showOptions: Boolean,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
 
     Box(
-        modifier = modifier,
+        modifier = modifier.padding(spacing.spaceMedium),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -49,7 +63,39 @@ fun BlockNoteGridTile(
                     .size(140.dp)
                     .padding(spacing.spaceMedium)
             )
-            Text(text = name, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = name,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Column(modifier = Modifier.align(Alignment.TopEnd)) {
+            IconButton(onClick = {
+                onBlockNoteOptionsClicked(id)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(id = R.string.block_note_options)
+                )
+            }
+            DropdownMenu(
+                expanded = showOptions,
+                onDismissRequest = onDismissOptionsRequested
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = coreResources.string.edit)) },
+                    onClick = {
+                        onEditBlockNoteClicked(id)
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(id = coreResources.string.remove)) },
+                    onClick = {
+                        onRemoveBlockNoteClicked(id)
+                    }
+                )
+            }
         }
     }
 }
