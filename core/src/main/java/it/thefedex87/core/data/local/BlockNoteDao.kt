@@ -17,7 +17,7 @@ interface BlockNoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBlockNote(blockNote: BlockNoteEntity): Long
 
-    @Update(onConflict = OnConflictStrategy.ABORT)
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateBlockNote(blockNote: BlockNoteEntity)
 
     @Delete
