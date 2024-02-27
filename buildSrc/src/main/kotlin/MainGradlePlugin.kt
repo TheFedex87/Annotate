@@ -24,6 +24,7 @@ class MainGradlePlugin: Plugin<Project> {
             plugin("kotlin-android")
             plugin("kotlin-kapt")
             plugin("dagger.hilt.android.plugin")
+            plugin("kotlin-parcelize")
         }
     }
 
