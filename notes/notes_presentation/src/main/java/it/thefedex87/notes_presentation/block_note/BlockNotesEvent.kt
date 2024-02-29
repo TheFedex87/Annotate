@@ -11,6 +11,6 @@ sealed interface BlockNotesEvent {
     data object OnDismissBlockNoteOptions: BlockNotesEvent
     data class OnEditBlockNoteClicked(val id: Long): BlockNotesEvent
     data class OnDeleteBlockNoteClicked(val id: Long): BlockNotesEvent
-    data class OnDeleteBlockNoteConfirmed(val id: Long): BlockNotesEvent
+    data object OnDeleteBlockNoteConfirmed: BlockNotesEvent
     data object OnDeleteBlockNoteDismissed: BlockNotesEvent
 }

@@ -24,15 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.components.SafeDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.theme.LocalSpacing
-import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNote
-import it.thefedex87.notes_presentation.block_note.addBlockNote.AddBlockNoteEvent
+import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNote
+import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
 import it.thefedex87.utils.Consts
@@ -49,7 +48,7 @@ fun BlockNotesView(
     // query: String,
     uiEvent: Flow<UiEvent>,
     onBlockNotesEvent: (BlockNotesEvent) -> Unit,
-    onAddBlockNoteEvent: (AddBlockNoteEvent) -> Unit,
+    onAddBlockNoteEvent: (AddEditBlockNoteEvent) -> Unit,
     onComposed: (MainScreenState) -> Unit,
     currentMainScreenState: MainScreenState,
     modifier: Modifier = Modifier,
@@ -81,20 +80,22 @@ fun BlockNotesView(
         }.launchIn(this)
     }
 
-    if (state.addBlockNoteState.showDialog) {
-        AddBlockNote(
-            state = state.addBlockNoteState,
+    if (state.addEditBlockNoteState.showDialog) {
+        AddEditBlockNote(
+            state = state.addEditBlockNoteState,
             onAddBlockNoteEvent = onAddBlockNoteEvent
         )
-    } else if (state.blockNoteDeleteState.showDeleteDialog) {
+    } else if (state.deleteBlockNoteState.showDialog) {
         SafeDeleteDialog(
             title = stringResource(id = R.string.delete),
             body = String.format(
                 stringResource(id = NotesPresentationR.string.remove_block_note_body_dialog),
-                state.blockNoteDeleteState.deleteBlockNoteName
+                state.deleteBlockNoteState.deleteBlockNoteName
             ),
-            validDeletionName = state.blockNoteDeleteState.deleteBlockNoteName,
-            onConfirmClicked = { },
+            validDeletionName = state.deleteBlockNoteState.deleteBlockNoteName,
+            onConfirmClicked = {
+                onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteConfirmed)
+            },
             onCancelClicked = {
                 onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteDismissed)
             },
@@ -152,7 +153,20 @@ fun BlockNotesView(
                     color = blockNote.color,
                     onBlockNoteClicked = {
                         onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(it))
-                    }
+                    },
+                    onBlockNoteOptionsClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
+                    },
+                    onDismissOptionsRequested = {
+                        onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
+                    },
+                    onEditBlockNoteClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
+                    },
+                    onRemoveBlockNoteClicked = {
+                        onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
+                    },
+                    showOptions = blockNote.showOptions
                 )
             }
         }

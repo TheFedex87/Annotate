@@ -17,7 +17,7 @@ sealed class BottomNavScreen(
 ) {
     data object Notebooks : BottomNavScreen(
         route = Routes.NOTEBOOKS,
-        icon = Icons.Default.MenuBook,
+        icon = Icons.AutoMirrored.Filled.MenuBook,
         title = UiText.StringResource(
             R.string.notebooks
         )

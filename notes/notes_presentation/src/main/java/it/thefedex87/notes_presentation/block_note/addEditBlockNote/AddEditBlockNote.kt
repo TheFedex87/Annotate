@@ -1,4 +1,4 @@
-package it.thefedex87.notes_presentation.block_note.addBlockNote
+package it.thefedex87.notes_presentation.block_note.addEditBlockNote
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -36,9 +36,9 @@ import it.thefedex87.notes_presentation.R as NotesPresentationR
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AddBlockNote(
-    state: AddBlockNoteState,
-    onAddBlockNoteEvent: (AddBlockNoteEvent) -> Unit
+fun AddEditBlockNote(
+    state: AddEditBlockNoteState,
+    onAddBlockNoteEvent: (AddEditBlockNoteEvent) -> Unit
 ) {
     val spacing = LocalSpacing.current
 
@@ -47,7 +47,7 @@ fun AddBlockNote(
     }
 
     Dialog(onDismissRequest = {
-        onAddBlockNoteEvent(AddBlockNoteEvent.OnDismiss)
+        onAddBlockNoteEvent(AddEditBlockNoteEvent.OnDismiss)
     }) {
         Box(
             modifier = Modifier
@@ -64,7 +64,7 @@ fun AddBlockNote(
                 BasicTextField(
                     value = state.name,
                     onValueChange = {
-                        onAddBlockNoteEvent(AddBlockNoteEvent.OnNameChanged(it))
+                        onAddBlockNoteEvent(AddEditBlockNoteEvent.OnNameChanged(it))
                     },
                     singleLine = true,
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
@@ -104,7 +104,7 @@ fun AddBlockNote(
                 )
                 ColorPicker(
                     onSelectNewColor = {
-                        onAddBlockNoteEvent(AddBlockNoteEvent.OnSelectedNewColor(it))
+                        onAddBlockNoteEvent(AddEditBlockNoteEvent.OnSelectedNewColor(it))
                     },
                     selectedColor = Color(state.selectedColor)
                 )
@@ -113,7 +113,7 @@ fun AddBlockNote(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = {
-                        onAddBlockNoteEvent(AddBlockNoteEvent.OnDismiss)
+                        onAddBlockNoteEvent(AddEditBlockNoteEvent.OnDismiss)
                     }) {
                         Text(text = stringResource(id = R.string.cancel))
                     }
@@ -121,7 +121,7 @@ fun AddBlockNote(
                     TextButton(
                         enabled = state.name.isNotBlank() && state.name.isNotEmpty(),
                         onClick = {
-                            onAddBlockNoteEvent(AddBlockNoteEvent.OnConfirmClicked)
+                            onAddBlockNoteEvent(AddEditBlockNoteEvent.OnConfirmClicked)
                         }) {
                         Text(text = stringResource(id = if(state.id == null) R.string.create else R.string.edit))
                     }

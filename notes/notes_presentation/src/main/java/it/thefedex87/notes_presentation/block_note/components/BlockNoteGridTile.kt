@@ -70,32 +70,14 @@ fun BlockNoteGridTile(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Column(modifier = Modifier.align(Alignment.TopEnd)) {
-            IconButton(onClick = {
-                onBlockNoteOptionsClicked(id)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(id = R.string.block_note_options)
-                )
-            }
-            DropdownMenu(
-                expanded = showOptions,
-                onDismissRequest = onDismissOptionsRequested
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = coreResources.string.edit)) },
-                    onClick = {
-                        onEditBlockNoteClicked(id)
-                    }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(id = coreResources.string.remove)) },
-                    onClick = {
-                        onRemoveBlockNoteClicked(id)
-                    }
-                )
-            }
-        }
+        BlockNoteSettings(
+            id = id,
+            onBlockNoteOptionsClicked = onBlockNoteOptionsClicked,
+            onDismissOptionsRequested = onDismissOptionsRequested,
+            onEditBlockNoteClicked = onEditBlockNoteClicked,
+            onRemoveBlockNoteClicked = onRemoveBlockNoteClicked,
+            showOptions = showOptions,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
     }
 }
