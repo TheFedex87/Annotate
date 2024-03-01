@@ -9,8 +9,6 @@ object Modules {
     const val notesData = ":notes:notes_data"
     const val notesPresentation = ":notes:notes_presentation"
     const val notesUtils = ":notes:notes_utils"
-
-    const val utils = ":utils"
 }
 
 fun DependencyHandler.core() {
@@ -35,8 +33,4 @@ fun DependencyHandler.notesPresentation() {
 
 fun DependencyHandler.notesUtils() {
     implementation(project(Modules.notesUtils))
-}
-
-fun DependencyHandler.utils() {
-    implementation(project(Modules.utils))
 }

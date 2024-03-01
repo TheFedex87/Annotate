@@ -29,7 +29,6 @@
             <option value="$PROJECT_DIR$/notes/notes_domain" />
             <option value="$PROJECT_DIR$/notes/notes_presentation" />
             <option value="$PROJECT_DIR$/notes/notes_utils" />
-            <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

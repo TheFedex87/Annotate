@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
+import it.thefedex87.core.utils.Consts
+import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.utils.UiText
 import it.thefedex87.notes_domain.repository.NotesRepository
@@ -15,8 +17,6 @@ import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlock
 import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteState
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.notes_utils.NotesConsts
-import it.thefedex87.utils.Consts
-import it.thefedex87.utils.Quadruple
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

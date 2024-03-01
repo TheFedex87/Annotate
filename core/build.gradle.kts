@@ -14,5 +14,4 @@ dependencies {
     hilt()
 
     // Projects
-    utils()
 }

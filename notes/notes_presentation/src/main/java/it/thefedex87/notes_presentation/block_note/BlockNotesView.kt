@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.components.SafeDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
@@ -34,7 +35,6 @@ import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlock
 import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
-import it.thefedex87.utils.Consts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

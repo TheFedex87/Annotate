@@ -10,11 +10,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import it.thefedex87.core.data.local.AnnotateDatabase
 import it.thefedex87.core.data.local.BlockNoteDao
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.notes_data.preferences.DefaultNotesPreferencesManager
 import it.thefedex87.notes_data.repository.NotesRepositoryImpl
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
-import it.thefedex87.utils.Consts
 import javax.inject.Singleton
 
 @Module

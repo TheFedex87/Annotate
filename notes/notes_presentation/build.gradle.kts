@@ -24,5 +24,4 @@ dependencies {
     core()
     notesDomain()
     notesUtils()
-    utils()
 }

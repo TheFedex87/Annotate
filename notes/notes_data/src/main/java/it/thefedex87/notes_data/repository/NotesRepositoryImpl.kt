@@ -2,14 +2,13 @@ package it.thefedex87.notes_data.repository
 
 import android.util.Log
 import it.thefedex87.core.data.local.BlockNoteDao
-import it.thefedex87.core.data.local.entity.BlockNoteEntity
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.notes_data.mappers.toBlockNoteEntity
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
-import it.thefedex87.utils.Consts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime

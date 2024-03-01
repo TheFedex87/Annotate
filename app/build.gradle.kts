@@ -30,7 +30,6 @@ dependencies {
     // Projects
     coreUi()
     core()
-    utils()
     notesPresentation()
     notesDomain() // For DI purpose
     notesData() // For DI purpose

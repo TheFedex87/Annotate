@@ -1,7 +1,6 @@
-package it.thefedex87.utils
+package it.thefedex87.core.utils
 
 import java.io.Serializable
-import kotlin.Triple
 
 data class Quadruple<out A, out B, out C, out D>(
     val first: A,
