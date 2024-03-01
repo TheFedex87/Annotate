@@ -4,14 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,13 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
-import it.thefedex87.core.R as coreResources
 
 @Composable
 fun BlockNoteGridTile(
@@ -35,7 +36,7 @@ fun BlockNoteGridTile(
     onBlockNoteClicked: (Long) -> Unit,
     onBlockNoteOptionsClicked: (Long) -> Unit,
     onDismissOptionsRequested: () -> Unit,
-    onEditBlockNoteClicked:(Long) -> Unit,
+    onEditBlockNoteClicked: (Long) -> Unit,
     onRemoveBlockNoteClicked: (Long) -> Unit,
     showOptions: Boolean,
     modifier: Modifier = Modifier
@@ -43,32 +44,38 @@ fun BlockNoteGridTile(
     val spacing = LocalSpacing.current
 
     Box(
-        modifier = modifier.padding(spacing.spaceMedium),
+        modifier = modifier
+            .padding(spacing.spaceMedium),
         contentAlignment = Alignment.Center
     ) {
-        Column(
+        ElevatedCard(
             modifier = Modifier
+                .width(140.dp)
                 .clickable {
                     onBlockNoteClicked(id)
-                },
-            horizontalAlignment = Alignment.CenterHorizontally
+                }
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.book),
-                contentDescription = name,
-                colorFilter = ColorFilter.tint(
-                    color = Color(color)
-                ),
-                modifier = Modifier
-                    .size(140.dp)
-                    .padding(spacing.spaceMedium)
-            )
-            Text(
-                text = name,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.book),
+                    contentDescription = name,
+                    colorFilter = ColorFilter.tint(
+                        color = Color(color)
+                    ),
+                    modifier = Modifier
+                        .size(140.dp)
+                        .padding(spacing.spaceMedium)
+                )
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(spacing.spaceSmall)
+                )
+            }
         }
         BlockNoteSettings(
             id = id,
@@ -80,4 +87,20 @@ fun BlockNoteGridTile(
             modifier = Modifier.align(Alignment.TopEnd)
         )
     }
+}
+
+@Composable
+@Preview
+fun PreviewBlockNoteGridTile() {
+    BlockNoteGridTile(
+        id = 1,
+        name = "Block Note 1",
+        color = Color.Magenta.toArgb(),
+        onBlockNoteClicked = {},
+        onBlockNoteOptionsClicked = {},
+        onDismissOptionsRequested = {},
+        onEditBlockNoteClicked = {},
+        onRemoveBlockNoteClicked = {},
+        showOptions = false
+    )
 }

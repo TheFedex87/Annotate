@@ -8,10 +8,10 @@ object Compose {
     const val bom = "androidx.compose:compose-bom:$bomVersion"
     const val ui = "androidx.compose.ui:ui"
     const val uiGraphics = "androidx.compose.ui:ui-graphics"
-    const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
     const val material3 = "androidx.compose.material3:material3"
     const val iconExtended = "androidx.compose.material:material-icons-extended"
     const val uiTooling = "androidx.compose.ui:ui-tooling"
+    const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
     const val uiTestManifest = "androidx.compose.ui:ui-test-manifest"
     const val runtime = "androidx.lifecycle:lifecycle-runtime-compose:2.6.2"  // Dependency for collectAsStateWithLifecycle
 
@@ -38,6 +38,7 @@ fun DependencyHandler.compose() {
     implementation(platform(Compose.bom))
     implementation(Compose.compiler)
     implementation(Compose.ui)
+    debugImplementation(Compose.uiTooling)
     implementation(Compose.uiToolingPreview)
     implementation(Compose.material3)
     implementation(Compose.iconExtended)
