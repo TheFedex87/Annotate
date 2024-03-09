@@ -1,12 +1,17 @@
 package it.thefedex87.annotate.bottom_navigation_screen
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -25,19 +30,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
+import it.thefedex87.annotate.R
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
+import it.thefedex87.notes_presentation.note.components.NotesList
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNote
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +82,7 @@ fun BottomNavigationScreen(
             AppBar(
                 title = mainScreenState.topBarTitle,
                 scrollBehavior = scrollBehavior,
+                onBackPressed = mainScreenState.topBarBackPressed,
                 actions = mainScreenState.topBarActions ?: {}
             )
         },
@@ -107,10 +121,18 @@ fun BottomNavigationScreen(
                     // query = query,
                     state = state,
                     onComposed = {
-                        mainScreenState = it
+                        mainScreenState = it.copy(
+                            topBarBackPressed = null
+                        )
                     },
                     currentMainScreenState = mainScreenState,
-                    onBlockNotesEvent = viewModel::onEvent,
+                    onBlockNotesEvent = {
+                        if (it is BlockNotesEvent.OnBlockNoteClicked) {
+                            navController.navigate("${Routes.NOTES_OF_BLOCK_NOTE}/${it.blockNote.id}")
+                        } else {
+                            viewModel.onEvent(it)
+                        }
+                    },
                     onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent,
                     uiEvent = viewModel.uiEvent,
                     snackbarHostState = snackbarHostState
@@ -118,6 +140,31 @@ fun BottomNavigationScreen(
             }
             composable(route = BottomNavScreen.RecentNotes.route) {
                 Text(text = "Recents")
+            }
+            composable(
+                route = "${Routes.NOTES_OF_BLOCK_NOTE}/{blockNoteId}",
+                arguments = listOf(
+                    navArgument("blockNoteId") {
+                        type = NavType.LongType
+                    }
+                )
+            ) {
+                val viewModel = hiltViewModel<NotesOfBlockNoteViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                Log.d(Consts.TAG, "Received new state: $state")
+
+                NotesOfBlockNote(
+                    state = state,
+                    onComposed = {
+                        mainScreenState = it.copy(
+                            topBarBackPressed = {
+                                navController.popBackStack()
+                            }
+                        )
+                    },
+                    currentMainScreenState = mainScreenState,
+                    onNotesEvent = {}
+                )
             }
         }
     }
@@ -128,6 +175,7 @@ fun BottomNavigationScreen(
 fun AppBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
+    onBackPressed: (() -> Unit)?,
     actions: @Composable RowScope.() -> Unit = { },
 ) {
 
@@ -136,7 +184,21 @@ fun AppBar(
             Text(text = title)
         },
         actions = actions,
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
+        navigationIcon = {
+            if(onBackPressed != null) {
+                IconButton(
+                    onClick = {
+                        onBackPressed.invoke()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(id = R.string.navigate_back)
+                    )
+                }
+            }
+        }
     )
 }
 

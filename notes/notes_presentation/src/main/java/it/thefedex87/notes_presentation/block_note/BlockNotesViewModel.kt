@@ -228,7 +228,7 @@ class BlockNotesViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is BlockNotesEvent.OnBlockNoteClicked -> {
-                    Log.d(Consts.TAG, "Clicked on block note: ${event.id}")
+                    Log.d(Consts.TAG, "Clicked on block note: ${event.blockNote.id}")
                 }
 
                 /*is BlockNotesEvent.OnQueryChanged -> {

@@ -10,6 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import it.thefedex87.core.data.local.AnnotateDatabase
 import it.thefedex87.core.data.local.BlockNoteDao
+import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.notes_data.preferences.DefaultNotesPreferencesManager
 import it.thefedex87.notes_data.repository.NotesRepositoryImpl
@@ -32,7 +33,12 @@ object AppModule {
     @Singleton
     @Provides
     fun provideBlockNoteDao(annotateDb: AnnotateDatabase): BlockNoteDao =
-        annotateDb.blockNotesDao
+        annotateDb.blockNoteDao
+
+    @Singleton
+    @Provides
+    fun provideNoteDao(annotateDb: AnnotateDatabase): NoteDao =
+        annotateDb.noteDao
 
     @Singleton
     @Provides
@@ -43,10 +49,12 @@ object AppModule {
     @Provides
     fun provideNotesRepository(
         blockNoteDao: BlockNoteDao,
+        noteDao: NoteDao,
         notesPreferencesManager: NotesPreferencesManager
     ): NotesRepository =
         NotesRepositoryImpl(
             blockNoteDao = blockNoteDao,
+            noteDao = noteDao,
             notesPreferencesManager = notesPreferencesManager
         )
 }

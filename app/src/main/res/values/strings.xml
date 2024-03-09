@@ -1,4 +1,5 @@
 <resources>
     <string name="notebooks">Notebooks</string>
     <string name="recents">Recents</string>
+    <string name="navigate_back">Navigate Back</string>
 </resources>

@@ -119,7 +119,7 @@ fun BlockNotesView(
                     name = blockNote.name,
                     color = blockNote.color,
                     onBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(it))
+                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
                     },
                     onBlockNoteOptionsClicked = {
                         onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
@@ -152,7 +152,7 @@ fun BlockNotesView(
                     name = blockNote.name,
                     color = blockNote.color,
                     onBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(it))
+                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
                     },
                     onBlockNoteOptionsClicked = {
                         onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))

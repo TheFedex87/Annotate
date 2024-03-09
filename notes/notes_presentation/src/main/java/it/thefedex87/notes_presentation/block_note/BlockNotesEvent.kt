@@ -1,9 +1,10 @@
 package it.thefedex87.notes_presentation.block_note
 
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.notes_presentation.block_note.model.BlockNoteUiModel
 
 sealed interface BlockNotesEvent {
-    data class OnBlockNoteClicked(val id: Long): BlockNotesEvent
+    data class OnBlockNoteClicked(val blockNote: BlockNoteUiModel): BlockNotesEvent
     //data class OnQueryChanged(val query: String): BlockNotesEvent
     data class OnVisualizationTypeChanged(val visualizationType: VisualizationType): BlockNotesEvent
     data object OnAddNewBlockNoteClicked : BlockNotesEvent

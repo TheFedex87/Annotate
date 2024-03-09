@@ -4,7 +4,8 @@ import java.time.LocalDateTime
 
 data class NoteDomainModel(
     val id: Long?,
-    val note: String,
+    val title: String,
+    val body: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
     val blockNote: BlockNoteDomainModel

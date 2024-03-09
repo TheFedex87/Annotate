@@ -2,20 +2,29 @@ package it.thefedex87.notes_data.repository
 
 import android.util.Log
 import it.thefedex87.core.data.local.BlockNoteDao
+import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
+import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core.utils.Consts
+import it.thefedex87.notes_data.mappers.toBlockNoteDomainModel
 import it.thefedex87.notes_data.mappers.toBlockNoteEntity
+import it.thefedex87.notes_data.mappers.toNoteDomainModel
+import it.thefedex87.notes_data.mappers.toNoteEntity
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 class NotesRepositoryImpl(
     val blockNoteDao: BlockNoteDao,
+    val noteDao: NoteDao,
     val notesPreferencesManager: NotesPreferencesManager
 ): NotesRepository {
     override val notesPreferences: Flow<NotesPreferences>
@@ -26,14 +35,8 @@ class NotesRepositoryImpl(
     }
 
     override fun blockNotes(query: String): Flow<List<BlockNoteDomainModel>> = blockNoteDao.getBlockNotes(query).map {
-        it.map {
-            BlockNoteDomainModel(
-                id = it.id,
-                name = it.name,
-                color = it.color,
-                createdAt = LocalDateTime.ofEpochSecond(it.createdAt, 0, ZoneOffset.UTC),
-                updatedAt = LocalDateTime.ofEpochSecond(it.updatedAt, 0, ZoneOffset.UTC)
-            )
+        it.map { blockNote ->
+            blockNote.toBlockNoteDomainModel()
         }
     }
 
@@ -65,6 +68,36 @@ class NotesRepositoryImpl(
         }
         catch (ex: Exception) {
             Log.d(Consts.TAG, "Error removing BlockNote")
+            throw ex
+        }
+    }
+
+    override fun notes(blockNote: BlockNoteDomainModel): Flow<List<NoteDomainModel>> {
+        return noteDao.getNotesOfBlockNote(blockNote.id!!).map {
+            it.map {
+                it.toNoteDomainModel(blockNote)
+            }
+        }
+    }
+
+    override suspend fun removeAllNotes(blockNoteId: Long) {
+        noteDao.removeAllNotes(blockNoteId)
+    }
+
+    override suspend fun addEditNote(note: NoteDomainModel) {
+        try {
+            if (note.id == null) {
+                noteDao.insertNote(
+                    note.toNoteEntity()
+                )
+            } else {
+                noteDao.updateNote(
+                    note.toNoteEntity()
+                )
+            }
+        }
+        catch (ex: Exception) {
+            Log.d(Consts.TAG, "Error on saving Note")
             throw ex
         }
     }
