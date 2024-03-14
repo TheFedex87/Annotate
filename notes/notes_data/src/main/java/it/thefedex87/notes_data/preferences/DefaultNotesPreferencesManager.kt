@@ -21,7 +21,10 @@ class DefaultNotesPreferencesManager(
     companion object {
         val BLOCK_NOTES_VISUALIZATION_TYPE_KEY =
             stringPreferencesKey(NotesConsts.BLOCK_NOTES_VISUALIZATION_TYPE_PREFERENCE_KEY)
-        const val DEFAULT_BLOCK_NOTES_VISUALIZATION_TYPE_KEY = "Grid"
+        val NOTES_VISUALIZATION_TYPE_KEY =
+            stringPreferencesKey(NotesConsts.NOTES_VISUALIZATION_TYPE_PREFERENCE_KEY)
+
+        const val DEFAULT_VISUALIZATION_TYPE_KEY = "Grid"
     }
 
     private val Context.dataStore by preferencesDataStore(
@@ -38,17 +41,29 @@ class DefaultNotesPreferencesManager(
         .map { preferences ->
             val blockNotesVisualizationType = VisualizationType.fromString(
                 preferences[BLOCK_NOTES_VISUALIZATION_TYPE_KEY]
-                    ?: DEFAULT_BLOCK_NOTES_VISUALIZATION_TYPE_KEY
+                    ?: DEFAULT_VISUALIZATION_TYPE_KEY
+            )
+
+            val notesVisualizationType = VisualizationType.fromString(
+                preferences[NOTES_VISUALIZATION_TYPE_KEY]
+                    ?: DEFAULT_VISUALIZATION_TYPE_KEY
             )
 
             NotesPreferences(
-                blockNotesVisualizationType = blockNotesVisualizationType
+                blockNotesVisualizationType = blockNotesVisualizationType,
+                notesVisualizationType = notesVisualizationType
             )
         }
 
     override suspend fun updateBlockNotesVisualizationType(type: VisualizationType) {
         context.dataStore.edit { preferences ->
             preferences[BLOCK_NOTES_VISUALIZATION_TYPE_KEY] = VisualizationType.toSimpleString(type)
+        }
+    }
+
+    override suspend fun updateNotesVisualizationType(type: VisualizationType) {
+        context.dataStore.edit { preferences ->
+            preferences[NOTES_VISUALIZATION_TYPE_KEY] = VisualizationType.toSimpleString(type)
         }
     }
 }

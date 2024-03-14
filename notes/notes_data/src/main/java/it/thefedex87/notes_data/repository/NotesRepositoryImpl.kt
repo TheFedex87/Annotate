@@ -101,4 +101,8 @@ class NotesRepositoryImpl(
             throw ex
         }
     }
+
+    override suspend fun updateNotesVisualizationType(visualizationType: VisualizationType) {
+        notesPreferencesManager.updateNotesVisualizationType(visualizationType)
+    }
 }

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,8 +47,7 @@ import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
-import it.thefedex87.notes_presentation.note.components.NotesList
-import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNote
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteScreen
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteViewModel
 
 
@@ -153,7 +151,7 @@ fun BottomNavigationScreen(
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 Log.d(Consts.TAG, "Received new state: $state")
 
-                NotesOfBlockNote(
+                NotesOfBlockNoteScreen(
                     state = state,
                     onComposed = {
                         mainScreenState = it.copy(
@@ -163,7 +161,7 @@ fun BottomNavigationScreen(
                         )
                     },
                     currentMainScreenState = mainScreenState,
-                    onNotesEvent = {}
+                    onNotesEvent = viewModel::onEvent
                 )
             }
         }

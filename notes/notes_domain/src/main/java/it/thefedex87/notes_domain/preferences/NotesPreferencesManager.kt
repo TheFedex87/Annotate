@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface NotesPreferencesManager {
     fun preferencesFlow(): Flow<NotesPreferences>
     suspend fun updateBlockNotesVisualizationType(type: VisualizationType)
+    suspend fun updateNotesVisualizationType(type: VisualizationType)
 }

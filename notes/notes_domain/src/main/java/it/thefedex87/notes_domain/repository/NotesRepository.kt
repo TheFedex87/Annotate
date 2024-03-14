@@ -15,6 +15,7 @@ interface NotesRepository {
     suspend fun removeBlockNote(blockNote: BlockNoteDomainModel)
     suspend fun removeAllBlockNotes()
 
+    suspend fun updateNotesVisualizationType(visualizationType: VisualizationType)
     fun notes(blockNote: BlockNoteDomainModel): Flow<List<NoteDomainModel>>
     suspend fun removeAllNotes(blockNoteId: Long)
     suspend fun addEditNote(note: NoteDomainModel)

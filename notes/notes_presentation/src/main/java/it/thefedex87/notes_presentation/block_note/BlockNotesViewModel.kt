@@ -13,8 +13,8 @@ import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.utils.UiText
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.R
-import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteEvent
-import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteState
+import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
+import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteState
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.notes_utils.NotesConsts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -173,13 +173,19 @@ class BlockNotesViewModel @Inject constructor(
 
                             Log.d(Consts.TAG, "Adding/edit a new block note: $name")
 
+                            val createdAt = if (id == null) {
+                                LocalDateTime.now()
+                            } else {
+                                repository.blockNotes().first().first { it.id == id }.createdAt
+                            }
+
                             try {
                                 repository.addEditBlockNote(
                                     BlockNoteDomainModel(
                                         id = id,
                                         name = name,
                                         color = color,
-                                        createdAt = LocalDateTime.now(),
+                                        createdAt = createdAt,
                                         updatedAt = LocalDateTime.now()
                                     )
                                 )

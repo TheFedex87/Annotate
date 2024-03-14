@@ -18,12 +18,10 @@ import androidx.compose.ui.unit.dp
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core_ui.MainScreenState
-import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
-import it.thefedex87.notes_presentation.block_note.BlockNotesState
 import it.thefedex87.notes_presentation.note.components.NotesList
 
 @Composable
-fun NotesOfBlockNote(
+fun NotesOfBlockNoteScreen(
     state: NotesOfBlockNoteState,
     onComposed: (MainScreenState) -> Unit,
     currentMainScreenState: MainScreenState,

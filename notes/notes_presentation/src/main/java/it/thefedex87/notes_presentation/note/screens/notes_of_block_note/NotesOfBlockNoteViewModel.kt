@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core.utils.Consts
+import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.note.model.toNoteUiModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -45,13 +46,15 @@ class NotesOfBlockNoteViewModel @Inject constructor(
         _blockNote.mapNotNull { it }.flatMapLatest {
             repository.notes(it)
         }.distinctUntilChanged(),
-        _state
-    ) {notes, state ->
-        Pair(notes, state)
-    }.mapLatest { (notes, state) ->
+        _state,
+        repository.notesPreferences
+    ) {notes, state, preferences ->
+        Triple(notes, state, preferences)
+    }.mapLatest { (notes, state, preferences) ->
         state.copy(
             notes = notes.map { it.toNoteUiModel() },
-            blockNoteName = _blockNote.value?.name ?: ""
+            blockNoteName = _blockNote.value?.name ?: "",
+            visualizationType = preferences.notesVisualizationType
         )
     }.stateIn(
         viewModelScope,
@@ -86,6 +89,19 @@ class NotesOfBlockNoteViewModel @Inject constructor(
                 }
                 _blockNote.update {
                     blockNote
+                }
+            }
+        }
+    }
+
+    fun onEvent(event: NotesOfBlockNoteEvent)  {
+        viewModelScope.launch {
+            when(event) {
+                is NotesOfBlockNoteEvent.OnAddNewNoteClicked -> {
+                    Unit
+                }
+                is NotesOfBlockNoteEvent.OnVisualizationTypeChanged -> {
+                    repository.updateNotesVisualizationType(event.visualizationType)
                 }
             }
         }

@@ -31,8 +31,8 @@ import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.components.SafeDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.theme.LocalSpacing
-import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNote
-import it.thefedex87.notes_presentation.block_note.addEditBlockNote.AddEditBlockNoteEvent
+import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNote
+import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
 import kotlinx.coroutines.flow.Flow

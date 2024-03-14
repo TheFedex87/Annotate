@@ -1,6 +1,8 @@
 package it.thefedex87.notes_presentation.note.components
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -16,16 +18,28 @@ fun NotesList(
     visualizationType: VisualizationType,
     modifier: Modifier = Modifier
 ) {
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-        modifier = modifier.fillMaxSize()
-    ) {
-        items(notes,
-            key = {
-                it.id
-            }
+    if(visualizationType == VisualizationType.Grid) {
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+            modifier = modifier.fillMaxSize()
         ) {
-            NoteGridTile(note = it)
+            items(notes,
+                key = {
+                    it.id
+                }
+            ) {
+                NoteGridTile(note = it)
+            }
+        }
+    } else {
+        LazyColumn{
+            items(notes,
+                key = {
+                    it.id
+                }
+            ) {
+                NoteListTile(note = it)
+            }
         }
     }
 }

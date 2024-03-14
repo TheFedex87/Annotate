@@ -1,4 +1,4 @@
-package it.thefedex87.notes_presentation.block_note.addEditBlockNote
+package it.thefedex87.notes_presentation.block_note.add_edit_block_note
 
 import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
