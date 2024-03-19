@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
@@ -23,8 +24,11 @@ class DefaultNotesPreferencesManager(
             stringPreferencesKey(NotesConsts.BLOCK_NOTES_VISUALIZATION_TYPE_PREFERENCE_KEY)
         val NOTES_VISUALIZATION_TYPE_KEY =
             stringPreferencesKey(NotesConsts.NOTES_VISUALIZATION_TYPE_PREFERENCE_KEY)
+        val NOTES_ORDER_BY_TYPE_KEY =
+            stringPreferencesKey(NotesConsts.NOTES_ORDER_BY_TYPE_PREFERENCE_KEY)
 
         const val DEFAULT_VISUALIZATION_TYPE_KEY = "Grid"
+        const val DEFAULT_NOTE_ORDER_BY = "CreatedRecent"
     }
 
     private val Context.dataStore by preferencesDataStore(
@@ -49,9 +53,15 @@ class DefaultNotesPreferencesManager(
                     ?: DEFAULT_VISUALIZATION_TYPE_KEY
             )
 
+            val notesOrderBy = OrderBy.fromString(
+                preferences[NOTES_ORDER_BY_TYPE_KEY]
+                    ?: DEFAULT_NOTE_ORDER_BY
+            )
+
             NotesPreferences(
                 blockNotesVisualizationType = blockNotesVisualizationType,
-                notesVisualizationType = notesVisualizationType
+                notesVisualizationType = notesVisualizationType,
+                notesOrderBy = notesOrderBy
             )
         }
 
@@ -64,6 +74,12 @@ class DefaultNotesPreferencesManager(
     override suspend fun updateNotesVisualizationType(type: VisualizationType) {
         context.dataStore.edit { preferences ->
             preferences[NOTES_VISUALIZATION_TYPE_KEY] = VisualizationType.toSimpleString(type)
+        }
+    }
+
+    override suspend fun updateNotesOrderBy(orderBy: OrderBy) {
+        context.dataStore.edit { preferences ->
+            preferences[NOTES_ORDER_BY_TYPE_KEY] = OrderBy.toSimpleString(orderBy)
         }
     }
 }

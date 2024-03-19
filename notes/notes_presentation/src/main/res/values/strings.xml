@@ -13,4 +13,9 @@
     <string name="title_placeholder">Title...</string>
     <string name="save_note">Save Note</string>
     <string name="note_placeholder">Insert note here...</string>
+    <string name="title">Title</string>
+    <string name="creation_date_recent">Creation date: more recent</string>
+    <string name="creation_date_older">Creation date: more older</string>
+    <string name="updated_date_recent">Updated date: more recent</string>
+    <string name="updated_date_older">Updated date: more older</string>
 </resources>

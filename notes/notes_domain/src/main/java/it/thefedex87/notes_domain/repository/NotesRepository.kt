@@ -2,6 +2,7 @@ package it.thefedex87.notes_domain.repository
 
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
+import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.notes_domain.model.NotesPreferences
 import kotlinx.coroutines.flow.Flow
@@ -21,4 +22,5 @@ interface NotesRepository {
     suspend fun removeAllNotes(blockNoteId: Long)
     suspend fun removeNote(id: Long)
     suspend fun addEditNote(note: NoteDomainModel): Long
+    suspend fun updateNotesOrderBy(orderBy: OrderBy)
 }

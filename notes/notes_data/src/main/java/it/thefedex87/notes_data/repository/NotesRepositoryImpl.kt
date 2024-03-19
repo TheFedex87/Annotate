@@ -5,6 +5,7 @@ import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
+import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.notes_data.mappers.toBlockNoteDomainModel
@@ -80,29 +81,48 @@ class NotesRepositoryImpl(
         }
     }
 
+    override suspend fun getNote(id: Long, blockNote: BlockNoteDomainModel): NoteDomainModel {
+        val note = noteDao.getNote(id)
+        return note.toNoteDomainModel(blockNote)
+    }
+
     override suspend fun removeAllNotes(blockNoteId: Long) {
         noteDao.removeAllNotes(blockNoteId)
     }
 
-    override suspend fun addEditNote(note: NoteDomainModel) {
-        try {
+    override suspend fun addEditNote(note: NoteDomainModel): Long {
+        return try {
             if (note.id == null) {
-                noteDao.insertNote(
+                val newId = noteDao.insertNote(
                     note.toNoteEntity()
                 )
+                newId
             } else {
                 noteDao.updateNote(
                     note.toNoteEntity()
                 )
+                note.id!!
             }
-        }
-        catch (ex: Exception) {
+        } catch (ex: Exception) {
             Log.d(Consts.TAG, "Error on saving Note")
+            throw ex
+        }
+    }
+
+    override suspend fun removeNote(id: Long) {
+        try {
+            noteDao.removeNote(id)
+        } catch (ex: Exception) {
+            Log.d(Consts.TAG, "Error on removing Note")
             throw ex
         }
     }
 
     override suspend fun updateNotesVisualizationType(visualizationType: VisualizationType) {
         notesPreferencesManager.updateNotesVisualizationType(visualizationType)
+    }
+
+    override suspend fun updateNotesOrderBy(orderBy: OrderBy) {
+        notesPreferencesManager.updateNotesOrderBy(orderBy)
     }
 }
