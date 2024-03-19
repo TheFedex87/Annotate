@@ -1,6 +1,7 @@
 package it.thefedex87.notes_presentation.note.components
 
 import android.graphics.Color
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import java.time.LocalDateTime
 @Composable
 fun NoteListTile(
     note: NoteUiModel,
+    onNoteClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -30,6 +32,9 @@ fun NoteListTile(
         modifier = modifier
             .fillMaxWidth()
             .padding(spacing.spaceSmall)
+            .clickable {
+                onNoteClicked(note.id)
+            }
     ) {
         Column(modifier = Modifier.padding(spacing.spaceSmall)) {
             Text(
@@ -64,5 +69,6 @@ fun NoteListTilePreview() {
             createdAt = LocalDateTime.now(),
             updatedAt = LocalDateTime.now()
         )
-    ))
+    ),
+        onNoteClicked = {})
 }

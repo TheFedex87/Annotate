@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -47,11 +48,14 @@ import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
 import it.thefedex87.notes_presentation.block_note.BlockNotesView
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
+import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteScreen
+import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteViewModel
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteEvent
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteScreen
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BottomNavigationScreen(
     modifier: Modifier = Modifier,
@@ -150,6 +154,7 @@ fun BottomNavigationScreen(
                 val viewModel = hiltViewModel<NotesOfBlockNoteViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 Log.d(Consts.TAG, "Received new state: $state")
+                val blockNoteId = it.arguments?.getLong("blockNoteId")
 
                 NotesOfBlockNoteScreen(
                     state = state,
@@ -161,7 +166,45 @@ fun BottomNavigationScreen(
                         )
                     },
                     currentMainScreenState = mainScreenState,
-                    onNotesEvent = viewModel::onEvent
+                    onNotesEvent = {
+                        if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {
+                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
+                        } else if(it is NotesOfBlockNoteEvent.OnNoteClicked) {
+                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${blockNoteId}?noteId=${it.id}")
+                        } else {
+                            viewModel.onEvent(it)
+                        }
+                    }
+                )
+            }
+            composable(
+                route = "${Routes.ADD_EDIT_NOTE}/{blockNoteId}?noteId={noteId}",
+                arguments = listOf(
+                    navArgument(name = "blockNoteId") {
+                        type = NavType.LongType
+                    },
+                    navArgument(name = "noteId") {
+                        type = NavType.LongType
+                        defaultValue = 0
+                    }
+                )
+            ) {
+                val viewModel = hiltViewModel<AddEditNoteViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                AddEditNoteScreen(
+                    title = state.title,
+                    onAddEditNoteEvent = viewModel::onEvent,
+                    note = state.noteState,
+                    createdAt = state.createdAt,
+                    currentMainScreenState = mainScreenState,
+                    onComposed = {
+                        mainScreenState = it.copy(
+                            topBarBackPressed = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                 )
             }
         }
@@ -184,7 +227,7 @@ fun AppBar(
         actions = actions,
         scrollBehavior = scrollBehavior,
         navigationIcon = {
-            if(onBackPressed != null) {
+            if (onBackPressed != null) {
                 IconButton(
                     onClick = {
                         onBackPressed.invoke()

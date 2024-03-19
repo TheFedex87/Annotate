@@ -10,4 +10,7 @@
     <string name="block_note_options">Block Note Options</string>
     <string name="remove_block_note_body_dialog">Do you really want to remove the block note %1$s</string>
     <string name="insert_block_note_name">Insert block note name here to delete</string>
+    <string name="title_placeholder">Title...</string>
+    <string name="save_note">Save Note</string>
+    <string name="note_placeholder">Insert note here...</string>
 </resources>

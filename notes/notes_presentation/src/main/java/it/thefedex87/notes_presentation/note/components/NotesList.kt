@@ -16,9 +16,10 @@ import it.thefedex87.notes_presentation.note.model.NoteUiModel
 fun NotesList(
     notes: List<NoteUiModel>,
     visualizationType: VisualizationType,
+    onNoteClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if(visualizationType == VisualizationType.Grid) {
+    if (visualizationType == VisualizationType.Grid) {
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
             modifier = modifier.fillMaxSize()
@@ -28,17 +29,23 @@ fun NotesList(
                     it.id
                 }
             ) {
-                NoteGridTile(note = it)
+                NoteGridTile(
+                    note = it,
+                    onNoteClicked = onNoteClicked
+                )
             }
         }
     } else {
-        LazyColumn{
+        LazyColumn {
             items(notes,
                 key = {
                     it.id
                 }
             ) {
-                NoteListTile(note = it)
+                NoteListTile(
+                    note = it,
+                    onNoteClicked
+                )
             }
         }
     }
