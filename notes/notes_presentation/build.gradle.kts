@@ -20,8 +20,10 @@ dependencies {
     compose()
     hilt()
 
+    // Project
     coreUi()
     core()
     notesDomain()
     notesUtils()
+    errorHandling()
 }

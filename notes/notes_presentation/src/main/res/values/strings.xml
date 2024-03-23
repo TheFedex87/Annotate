@@ -4,8 +4,6 @@
     <string name="insert_name_here">Insert name here</string>
     <string name="add_blocknote">Add new block note</string>
     <string name="cancel">Cancel</string>
-    <string name="error_adding_block_note">An error is occurred adding the block note</string>
-    <string name="error_editing_block_note">An error is occurred editing the block note</string>
     <string name="error_deleting_block_note">An error is occurred deleting the block note</string>
     <string name="block_note_options">Block Note Options</string>
     <string name="remove_block_note_body_dialog">Do you really want to remove the block note %1$s</string>
@@ -18,4 +16,9 @@
     <string name="creation_date_older">Creation date: more older</string>
     <string name="updated_date_recent">Updated date: more recent</string>
     <string name="updated_date_older">Updated date: more older</string>
-</resources>
+    <string name="note_not_found">Note not found</string>
+    <string name="error_saving_note_into_db">Error saving note</string>
+    <string name="error_removing_note_from_db">Error removing note</string>
+    <string name="block_note_not_found">Block note not found</string>
+    <string name="error_saving_block_note_into_db">Error saving block note</string>
+    </resources>

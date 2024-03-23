@@ -14,4 +14,5 @@ dependencies {
     hilt()
 
     // Projects
+    errorHandling()
 }

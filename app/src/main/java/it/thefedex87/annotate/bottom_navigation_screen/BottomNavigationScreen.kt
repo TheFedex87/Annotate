@@ -195,6 +195,8 @@ fun BottomNavigationScreen(
                 AddEditNoteScreen(
                     title = state.title,
                     onAddEditNoteEvent = viewModel::onEvent,
+                    snackbarHostState = snackbarHostState,
+                    uiEvent = viewModel.uiEvent,
                     note = state.noteState,
                     createdAt = state.createdAt,
                     currentMainScreenState = mainScreenState,

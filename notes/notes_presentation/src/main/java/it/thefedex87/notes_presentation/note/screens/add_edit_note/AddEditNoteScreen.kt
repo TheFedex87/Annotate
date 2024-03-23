@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,14 +36,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
+import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -49,12 +57,31 @@ import java.time.LocalDateTime
 fun AddEditNoteScreen(
     title: String,
     onAddEditNoteEvent: (AddEditNoteEvent) -> Unit,
+    snackbarHostState: SnackbarHostState,
+    uiEvent: Flow<UiEvent>,
     note: TextFieldState,
     createdAt: LocalDateTime,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        uiEvent.onEach {
+            Log.d(Consts.TAG, "Received new ui event in BlockNotesView: $it")
+            when (it) {
+                is UiEvent.ShowSnackBar -> {
+                    snackbarHostState?.showSnackbar(
+                        message = it.message.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+
+                else -> Unit
+            }
+        }.launchIn(this)
+    }
+
     LaunchedEffect(key1 = true) {
         onComposed(
             currentMainScreenState.copy(
@@ -197,6 +224,8 @@ fun AddEditNoteScreenPreview() {
     AddEditNoteScreen(
         title = "Test",
         onAddEditNoteEvent = {},
+        uiEvent = flow {  },
+        snackbarHostState = SnackbarHostState(),
         note = TextFieldState(initialText = "Nota prova nota \n egfg"),
         createdAt = LocalDateTime.now(),
         currentMainScreenState = MainScreenState(),

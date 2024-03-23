@@ -12,5 +12,7 @@ android {
 dependencies {
     hilt()
 
+    // Projects
     core()
+    errorHandling()
 }

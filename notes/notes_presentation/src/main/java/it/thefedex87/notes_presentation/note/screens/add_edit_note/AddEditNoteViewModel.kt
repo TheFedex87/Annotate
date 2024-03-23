@@ -8,6 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.NoteDomainModel
+import it.thefedex87.core_ui.events.UiEvent
+import it.thefedex87.error_handling.Result.*
+import it.thefedex87.error_handling.Result.Error
+import it.thefedex87.error_handling.Result.Success
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_utils.NotesConsts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +27,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
+import it.thefedex87.error_handling.Result
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -30,6 +37,9 @@ class AddEditNoteViewModel @Inject constructor(
     private val repository: NotesRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val _uiEvents = Channel<UiEvent>()
+    val uiEvent = _uiEvents.receiveAsFlow()
+
     private val _state = MutableStateFlow(
         AddEditNoteState(
             noteState = TextFieldState(
@@ -84,23 +94,31 @@ class AddEditNoteViewModel @Inject constructor(
                         .firstOrNull { it.id == _state.value.blockNoteId }
                         ?.let { blocknote ->
                             val note = repository.getNote(noteId, blocknote)
-                            originalBody = note.body
-                            originalTitle = note.title
+                            when(note) {
+                                is Error -> {
+                                    _uiEvents.send(UiEvent.ShowSnackBar(note.asErrorUiText()))
+                                }
+                                is Success -> {
+                                    originalBody = note.data.body
+                                    originalTitle = note.data.title
 
-                            _state.value.noteState.edit {
-                                replace(
-                                    0,
-                                    _state.value.noteState.text.length,
-                                    note.body
-                                )
+                                    _state.value.noteState.edit {
+                                        replace(
+                                            0,
+                                            _state.value.noteState.text.length,
+                                            note.data.body
+                                        )
+                                    }
+                                    _state.update {
+                                        it.copy(
+                                            createdAt = note.data.createdAt
+                                        )
+                                    }
+                                    savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY] =
+                                        note.data.title
+                                }
                             }
-                            _state.update {
-                                it.copy(
-                                    createdAt = note.createdAt
-                                )
-                            }
-                            savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY] =
-                                note.title
+
                         }
                 }
             }
@@ -118,7 +136,7 @@ class AddEditNoteViewModel @Inject constructor(
                     storeNote()
                 }
 
-                is AddEditNoteEvent.OnSaveNoteClicked -> {
+                /*is AddEditNoteEvent.OnSaveNoteClicked -> {
                     repository.blockNotes().first()
                         .firstOrNull { it.id == _state.value.blockNoteId }?.let { blocknote ->
                             if (_state.value.noteId == null) {
@@ -138,7 +156,7 @@ class AddEditNoteViewModel @Inject constructor(
                                 // Editing note
                             }
                         }
-                }
+                }*/
             }
         }
     }
@@ -152,7 +170,7 @@ class AddEditNoteViewModel @Inject constructor(
         ) {
             repository.blockNotes().first().firstOrNull { it.id == _state.value.blockNoteId }
                 ?.let { blocknote ->
-                    val id = repository.addEditNote(
+                    val result = repository.addEditNote(
                         NoteDomainModel(
                             id = if (currentId == 0L) null else currentId,
                             title = savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY]
@@ -163,12 +181,34 @@ class AddEditNoteViewModel @Inject constructor(
                             updatedAt = LocalDateTime.now()
                         )
                     )
-                    savedStateHandle[NotesConsts.NOTE_ID] = id
+                    when(result) {
+                        is Error -> {
+                            _uiEvents.send(
+                                UiEvent.ShowSnackBar(
+                                    result.asErrorUiText()
+                                )
+                            )
+                        }
+                        is Success -> {
+                            savedStateHandle[NotesConsts.NOTE_ID] = result.data
+                        }
+                    }
+
                 }
         } else {
             currentId?.let {
                 if (it > 0) {
-                    repository.removeNote(it)
+                    val result = repository.removeNote(it)
+                    when(result) {
+                        is Error -> {
+                            _uiEvents.send(
+                                UiEvent.ShowSnackBar(
+                                    result.asErrorUiText()
+                                )
+                            )
+                        }
+                        is Success -> Unit
+                    }
                 }
             }
             savedStateHandle.remove<Long>(NotesConsts.NOTE_ID)

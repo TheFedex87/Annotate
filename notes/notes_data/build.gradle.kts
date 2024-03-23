@@ -13,7 +13,9 @@ dependencies {
     dataStore()
     hilt()
 
+    // Projects
     notesDomain()
     notesUtils()
     core()
+    errorHandling()
 }

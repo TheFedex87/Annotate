@@ -11,6 +11,7 @@ import it.thefedex87.core.utils.Consts
 import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.utils.UiText
+import it.thefedex87.error_handling.Result
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
@@ -133,34 +134,6 @@ class BlockNotesViewModel @Inject constructor(
         BlockNotesState()
     )*/
 
-    init {
-        /*viewModelScope.launch {
-            repository.removeAllBlockNotes()
-        }
-
-        viewModelScope.launch {
-            var index = 1L
-            while (index < 100) {
-                repository.addBlockNote(
-                    BlockNoteDomainModel(
-                        id = index,
-                        name = "Block note $index",
-                        color = Color.argb(
-                            255,
-                            Random.nextInt(0, 255),
-                            Random.nextInt(0, 255),
-                            Random.nextInt(0, 255)
-                        ),
-                        createdAt = LocalDate.now(),
-                        updatedAt = LocalDate.now()
-                    )
-                )
-                delay(2000)
-                index++
-            }
-        }*/
-    }
-
     fun onAddBlockNoteEvent(event: AddEditBlockNoteEvent) {
         viewModelScope.launch {
             when (event) {
@@ -180,7 +153,7 @@ class BlockNotesViewModel @Inject constructor(
                             }
 
                             try {
-                                repository.addEditBlockNote(
+                                var result = repository.addEditBlockNote(
                                     BlockNoteDomainModel(
                                         id = id,
                                         name = name,
@@ -190,16 +163,25 @@ class BlockNotesViewModel @Inject constructor(
                                     )
                                 )
 
-                                savedStateHandle[NotesConsts.ADD_EDIT_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
-                                    AddEditBlockNoteState(
-                                        showDialog = false
-                                    )
-                            } catch (ex: Exception) {
-                                if (id == null) {
-                                    _uiEvent.send(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_adding_block_note)))
-                                } else {
-                                    _uiEvent.send(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_editing_block_note)))
+                                when(result) {
+                                    is Result.Error -> {
+                                        _uiEvent.send(
+                                            UiEvent.ShowSnackBar(
+                                                result.asErrorUiText()
+                                            )
+                                        )
+                                    }
+                                    is Result.Success -> {
+                                        savedStateHandle[NotesConsts.ADD_EDIT_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
+                                            AddEditBlockNoteState(
+                                                showDialog = false
+                                            )
+                                    }
                                 }
+
+
+                            } catch (ex: Exception) {
+
                             }
                         }
                 }
@@ -313,17 +295,24 @@ class BlockNotesViewModel @Inject constructor(
                             }?.let { blockNote ->
                                 Log.d(Consts.TAG, "Delete block note: ${blockNote.name}")
 
-                                try {
-                                    repository.removeBlockNote(
-                                        blockNote
-                                    )
+                                val result = repository.removeBlockNote(
+                                    blockNote
+                                )
 
-                                    savedStateHandle[NotesConsts.DELETE_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
-                                        DeleteBlockNoteState(
-                                            showDialog = false
+                                when(result) {
+                                    is Result.Error -> {
+                                        _uiEvent.send(
+                                            UiEvent.ShowSnackBar(
+                                                result.asErrorUiText()
+                                            )
                                         )
-                                } catch (ex: Exception) {
-                                    _uiEvent.send(UiEvent.ShowSnackBar(UiText.StringResource(R.string.error_deleting_block_note)))
+                                    }
+                                    is Result.Success -> {
+                                        savedStateHandle[NotesConsts.DELETE_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
+                                            DeleteBlockNoteState(
+                                                showDialog = false
+                                            )
+                                    }
                                 }
                             }
                         }
