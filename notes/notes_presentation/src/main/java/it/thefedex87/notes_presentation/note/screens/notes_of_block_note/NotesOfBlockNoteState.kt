@@ -11,5 +11,6 @@ data class NotesOfBlockNoteState(
     val visualizationType: VisualizationType = VisualizationType.Grid,
     val blockNote: BlockNoteDomainModel? = null,
     val orderBy: OrderBy = OrderBy.CreatedAt(DateOrderType.RECENT),
-    val isOrderByExpanded:Boolean = false
+    val isOrderByExpanded: Boolean = false,
+    val isMultiSelectionActive: Boolean = false
 )

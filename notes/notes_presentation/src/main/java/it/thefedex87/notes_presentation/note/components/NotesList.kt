@@ -17,6 +17,9 @@ fun NotesList(
     notes: List<NoteUiModel>,
     visualizationType: VisualizationType,
     onNoteClicked: (Long) -> Unit,
+    onNoteLongClicked: (Long) -> Unit,
+    onSelectionChanged: (Long, Boolean) -> Unit,
+    isMultiSelectionActive: Boolean,
     modifier: Modifier = Modifier
 ) {
     if (visualizationType == VisualizationType.Grid) {
@@ -31,7 +34,10 @@ fun NotesList(
             ) {
                 NoteGridTile(
                     note = it,
-                    onNoteClicked = onNoteClicked
+                    onNoteClicked = onNoteClicked,
+                    onNoteLongClicked = onNoteLongClicked,
+                    isMultiSelectionActive = isMultiSelectionActive,
+                    selectionChanged = onSelectionChanged
                 )
             }
         }

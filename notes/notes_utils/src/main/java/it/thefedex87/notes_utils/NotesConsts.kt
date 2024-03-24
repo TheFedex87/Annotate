@@ -11,6 +11,7 @@ object NotesConsts {
 
     const val ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY = "ADD_EDIT_NOTE_TITLE_KEY"
     const val ADD_EDIT_NOTE_BODY_SAVED_STATE_HANDLE_KEY = "ADD_EDIT_NOTE_BODY_KEY"
+    const val SELECTED_NOTES_SAVED_STATE_HANDLE_KEY = "SELECTED_NOTES_KEY"
     const val NOTE_ID = "noteId"
     const val BLOCK_NOTE_ID = "blockNoteId"
 

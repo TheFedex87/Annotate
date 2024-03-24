@@ -10,6 +10,9 @@ sealed interface NotesOfBlockNoteEvent {
 
     data class OnNoteClicked(val id: Long) : NotesOfBlockNoteEvent
 
-    data class OnOrderByChanged(val orderBy: OrderBy) :NotesOfBlockNoteEvent
+    data class OnOrderByChanged(val orderBy: OrderBy) : NotesOfBlockNoteEvent
     data class ExpandOrderByMenuChanged(val isExpanded: Boolean) : NotesOfBlockNoteEvent
+    data class MultiSelectionStateChanged(val active: Boolean, val id: Long) : NotesOfBlockNoteEvent
+    data object DeselectAllNotes : NotesOfBlockNoteEvent
+    data class OnSelectionChanged(val id: Long, val selected: Boolean): NotesOfBlockNoteEvent
 }

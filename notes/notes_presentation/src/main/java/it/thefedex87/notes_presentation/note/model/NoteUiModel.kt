@@ -9,5 +9,6 @@ data class NoteUiModel(
     val body: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
-    val blockNoteUiModel: BlockNoteUiModel
+    val blockNoteUiModel: BlockNoteUiModel,
+    val isSelected: Boolean = false
 )

@@ -1,5 +1,6 @@
 package it.thefedex87.notes_presentation.note.screens.notes_of_block_note
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +46,10 @@ fun NotesOfBlockNoteScreen(
     onNotesEvent: (NotesOfBlockNoteEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    BackHandler(enabled = state.isMultiSelectionActive) {
+        onNotesEvent(NotesOfBlockNoteEvent.DeselectAllNotes)
+    }
+
     ComposeMainScreenState(
         state = state,
         currentMainScreenState = currentMainScreenState,
@@ -54,7 +59,7 @@ fun NotesOfBlockNoteScreen(
 
     Box(modifier = modifier.fillMaxSize()) {
         Column {
-            val currentOrderByStr = when(state.orderBy) {
+            val currentOrderByStr = when (state.orderBy) {
                 OrderBy.Title -> stringResource(id = NotesResources.string.title)
                 OrderBy.CreatedAt(DateOrderType.OLDER) -> stringResource(id = NotesResources.string.creation_date_older)
                 OrderBy.CreatedAt(DateOrderType.RECENT) -> stringResource(id = NotesResources.string.creation_date_recent)
@@ -91,26 +96,62 @@ fun NotesOfBlockNoteScreen(
                         }
                     },
                     //trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor().widthIn(min = 200.dp)
+                    modifier = Modifier
+                        .menuAnchor()
+                        .widthIn(min = 200.dp)
                 )
                 ExposedDropdownMenu(expanded = state.isOrderByExpanded, onDismissRequest = {
                     onNotesEvent(NotesOfBlockNoteEvent.ExpandOrderByMenuChanged(false))
                 }) {
-                    DropdownMenuItem(text = { Text(text = stringResource(id = NotesResources.string.title)) }, onClick = {
-                        onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.Title))
-                    })
-                    DropdownMenuItem(text = { Text(text = stringResource(id = NotesResources.string.creation_date_recent)) }, onClick = {
-                        onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.CreatedAt(DateOrderType.RECENT)))
-                    })
-                    DropdownMenuItem(text = { Text(text = stringResource(id = NotesResources.string.creation_date_older)) }, onClick = {
-                        onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.CreatedAt(DateOrderType.OLDER)))
-                    })
-                    DropdownMenuItem(text = { Text(text = stringResource(id = NotesResources.string.updated_date_recent)) }, onClick = {
-                        onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.UpdatedAt(DateOrderType.RECENT)))
-                    })
-                    DropdownMenuItem(text = { Text(text = stringResource(id = NotesResources.string.updated_date_older)) }, onClick = {
-                        onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.UpdatedAt(DateOrderType.OLDER)))
-                    })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = NotesResources.string.title)) },
+                        onClick = {
+                            onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.Title))
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_recent)) },
+                        onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnOrderByChanged(
+                                    OrderBy.CreatedAt(
+                                        DateOrderType.RECENT
+                                    )
+                                )
+                            )
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_older)) },
+                        onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnOrderByChanged(
+                                    OrderBy.CreatedAt(
+                                        DateOrderType.OLDER
+                                    )
+                                )
+                            )
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_recent)) },
+                        onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnOrderByChanged(
+                                    OrderBy.UpdatedAt(
+                                        DateOrderType.RECENT
+                                    )
+                                )
+                            )
+                        })
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_older)) },
+                        onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnOrderByChanged(
+                                    OrderBy.UpdatedAt(
+                                        DateOrderType.OLDER
+                                    )
+                                )
+                            )
+                        })
                 }
 
             }
@@ -119,6 +160,23 @@ fun NotesOfBlockNoteScreen(
                 visualizationType = state.visualizationType,
                 onNoteClicked = {
                     onNotesEvent(NotesOfBlockNoteEvent.OnNoteClicked(it))
+                },
+                onNoteLongClicked = {
+                    onNotesEvent(
+                        NotesOfBlockNoteEvent.MultiSelectionStateChanged(
+                            active = true,
+                            id = it
+                        )
+                    )
+                },
+                isMultiSelectionActive = state.isMultiSelectionActive,
+                onSelectionChanged = { id, selected ->
+                    onNotesEvent(
+                        NotesOfBlockNoteEvent.OnSelectionChanged(
+                            id,
+                            selected
+                        )
+                    )
                 }
             )
         }
