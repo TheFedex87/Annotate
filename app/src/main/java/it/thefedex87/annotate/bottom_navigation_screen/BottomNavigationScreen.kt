@@ -165,6 +165,8 @@ fun BottomNavigationScreen(
                             }
                         )
                     },
+                    uiEvent = viewModel.uiEvent,
+                    snackbarHostState = snackbarHostState,
                     currentMainScreenState = mainScreenState,
                     onNotesEvent = {
                         if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {

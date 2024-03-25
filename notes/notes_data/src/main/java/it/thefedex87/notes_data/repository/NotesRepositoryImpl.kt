@@ -96,6 +96,18 @@ class NotesRepositoryImpl(
         noteDao.removeAllNotes(blockNoteId)
     }
 
+    override suspend fun removeNotes(ids: List<Long>): Result<Unit, DataError> {
+        return try {
+            ids.forEach {
+                noteDao.removeNote(it)
+            }
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            Log.d(Consts.TAG, "Error removing note")
+            Result.Error(DataError.Local.REMOVE_FROM_DB_ERROR)
+        }
+    }
+
     override suspend fun addEditNote(note: NoteDomainModel): Result<Long, DataError.Local> {
         return try {
             val id = if (note.id == null) {

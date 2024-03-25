@@ -57,7 +57,7 @@ import java.time.LocalDateTime
 fun AddEditNoteScreen(
     title: String,
     onAddEditNoteEvent: (AddEditNoteEvent) -> Unit,
-    snackbarHostState: SnackbarHostState,
+    snackbarHostState: SnackbarHostState?,
     uiEvent: Flow<UiEvent>,
     note: TextFieldState,
     createdAt: LocalDateTime,

@@ -12,5 +12,6 @@ data class NotesOfBlockNoteState(
     val blockNote: BlockNoteDomainModel? = null,
     val orderBy: OrderBy = OrderBy.CreatedAt(DateOrderType.RECENT),
     val isOrderByExpanded: Boolean = false,
-    val isMultiSelectionActive: Boolean = false
+    val isMultiSelectionActive: Boolean = false,
+    val showConfirmDeleteDialog: Boolean = false
 )

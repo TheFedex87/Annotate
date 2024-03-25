@@ -21,4 +21,7 @@
     <string name="error_removing_note_from_db">Error removing note</string>
     <string name="block_note_not_found">Block note not found</string>
     <string name="error_saving_block_note_into_db">Error saving block note</string>
-    </resources>
+    <string name="add_knote">Add Note</string>
+    <string name="remove_notes">Remove Selected Notes</string>
+    <string name="remove_notes_confirm_body">Do you really want to remove the selected notes?</string>
+</resources>

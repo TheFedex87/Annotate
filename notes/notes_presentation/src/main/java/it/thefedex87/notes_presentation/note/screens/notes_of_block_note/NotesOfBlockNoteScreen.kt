@@ -1,5 +1,6 @@
 package it.thefedex87.notes_presentation.note.screens.notes_of_block_note
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,19 +24,28 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.DateOrderType
 import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
+import it.thefedex87.core_ui.components.SimpleDeleteDialog
+import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.notes_presentation.note.components.NotesList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import it.thefedex87.notes_presentation.R as NotesResources
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -42,6 +53,8 @@ import it.thefedex87.notes_presentation.R as NotesResources
 fun NotesOfBlockNoteScreen(
     state: NotesOfBlockNoteState,
     onComposed: (MainScreenState) -> Unit,
+    uiEvent: Flow<UiEvent>,
+    snackbarHostState: SnackbarHostState?,
     currentMainScreenState: MainScreenState,
     onNotesEvent: (NotesOfBlockNoteEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -50,12 +63,42 @@ fun NotesOfBlockNoteScreen(
         onNotesEvent(NotesOfBlockNoteEvent.DeselectAllNotes)
     }
 
+    val context = LocalContext.current
+    LaunchedEffect(key1 = true) {
+        uiEvent.onEach {
+            Log.d(Consts.TAG, "Received new ui event in BlockNotesView: $it")
+            when (it) {
+                is UiEvent.ShowSnackBar -> {
+                    snackbarHostState?.showSnackbar(
+                        message = it.message.asString(context),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+
+                else -> Unit
+            }
+        }.launchIn(this)
+    }
+
     ComposeMainScreenState(
         state = state,
         currentMainScreenState = currentMainScreenState,
         onComposed = onComposed,
         onNotesEvent = onNotesEvent
     )
+
+    if (state.showConfirmDeleteDialog) {
+        SimpleDeleteDialog(
+            title = stringResource(id = NotesResources.string.remove_notes),
+            body = stringResource(id = NotesResources.string.remove_notes_confirm_body),
+            onConfirmClicked = {
+                onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesConfirmed)
+            },
+            onDismiss = {
+                onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesCanceled)
+            }
+        )
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         Column {
@@ -196,22 +239,38 @@ private fun ComposeMainScreenState(
     else
         state.blockNote.name
 
-    LaunchedEffect(key1 = state.visualizationType, key2 = appBarTitle, key3 = state.blockNote) {
+    LaunchedEffect(
+        key1 = state,
+        key2 = appBarTitle
+    ) {
         onComposed(
             currentMainScreenState.copy(
                 topBarTitle = appBarTitle,
                 topBarVisible = true,
                 bottomBarVisible = true,
                 topBarActions = {
-                    IconButton(onClick = {
-                        onNotesEvent(
-                            NotesOfBlockNoteEvent.OnAddNewNoteClicked(state.blockNote?.id ?: 0)
-                        )
-                    }, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.add_blocknote)
-                        )
+                    if (!state.isMultiSelectionActive) {
+                        IconButton(onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnAddNewNoteClicked(state.blockNote?.id ?: 0)
+                            )
+                        }, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.add_knote)
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnRemoveSelectedNotesClicked
+                            )
+                        }, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.remove_notes)
+                            )
+                        }
                     }
                     when (state.visualizationType) {
                         VisualizationType.Grid -> {

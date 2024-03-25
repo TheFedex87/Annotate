@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core_ui.events.UiEvent
-import it.thefedex87.error_handling.Result.*
 import it.thefedex87.error_handling.Result.Error
 import it.thefedex87.error_handling.Result.Success
 import it.thefedex87.notes_domain.repository.NotesRepository
@@ -27,7 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
-import it.thefedex87.error_handling.Result
+import it.thefedex87.notes_presentation.note.screens.asErrorUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 

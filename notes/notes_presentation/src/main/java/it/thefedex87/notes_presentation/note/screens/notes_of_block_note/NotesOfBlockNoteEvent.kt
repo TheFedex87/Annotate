@@ -15,4 +15,7 @@ sealed interface NotesOfBlockNoteEvent {
     data class MultiSelectionStateChanged(val active: Boolean, val id: Long) : NotesOfBlockNoteEvent
     data object DeselectAllNotes : NotesOfBlockNoteEvent
     data class OnSelectionChanged(val id: Long, val selected: Boolean): NotesOfBlockNoteEvent
+    data object OnRemoveSelectedNotesClicked : NotesOfBlockNoteEvent
+    data object OnRemoveSelectedNotesConfirmed : NotesOfBlockNoteEvent
+    data object OnRemoveSelectedNotesCanceled : NotesOfBlockNoteEvent
 }

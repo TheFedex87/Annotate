@@ -22,6 +22,7 @@ interface NotesRepository {
     fun notes(blockNote: BlockNoteDomainModel): Flow<List<NoteDomainModel>>
     suspend fun getNote(id: Long, blockNote: BlockNoteDomainModel): Result<NoteDomainModel, DataError>
     suspend fun removeAllNotes(blockNoteId: Long)
+    suspend fun removeNotes(ids: List<Long>): Result<Unit, DataError>
     suspend fun removeNote(id: Long): Result<Unit, DataError>
     suspend fun addEditNote(note: NoteDomainModel): Result<Long, DataError>
     suspend fun updateNotesOrderBy(orderBy: OrderBy)
