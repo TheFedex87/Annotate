@@ -44,6 +44,7 @@ import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.components.SimpleDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
+import it.thefedex87.notes_presentation.note.components.MoveNotesDialog
 import it.thefedex87.notes_presentation.note.components.NotesList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
@@ -98,6 +99,39 @@ fun NotesOfBlockNoteScreen(
             },
             onDismiss = {
                 onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesCanceled)
+            }
+        )
+    }
+
+    if (state.showMoveNotesDialog) {
+        MoveNotesDialog(
+            onDismissDialog = {
+                onNotesEvent(
+                    NotesOfBlockNoteEvent.OnMoveNotesCanceled
+                )
+            },
+            onConfirmClicked = {
+                onNotesEvent(
+                    NotesOfBlockNoteEvent.OnMoveNotesConfirmed
+                )
+            },
+            expanded = state.moveNotesBlockNotesExpanded,
+            onExpandedChanged = {
+                onNotesEvent(
+                    NotesOfBlockNoteEvent.ExpandMoveNotesBlockNotesList(it)
+                )
+            },
+            selectedBlockNoteId = state.selectedBlockNoteToMoveNotes,
+            availableBlockNotes = state.availableBlockNotes,
+            onDismissBlockNotesList = {
+                onNotesEvent(
+                    NotesOfBlockNoteEvent.ExpandMoveNotesBlockNotesList(false)
+                )
+            },
+            onBlockNoteSelected = {
+                onNotesEvent(
+                    NotesOfBlockNoteEvent.OnMoveNotesNewBlockNoteSelected(it)
+                )
             }
         )
     }
@@ -265,7 +299,7 @@ private fun ComposeMainScreenState(
                     } else {
                         IconButton(onClick = {
                             onNotesEvent(
-                                NotesOfBlockNoteEvent.OnRemoveSelectedNotesClicked
+                                NotesOfBlockNoteEvent.OnMoveNotesRequested
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(

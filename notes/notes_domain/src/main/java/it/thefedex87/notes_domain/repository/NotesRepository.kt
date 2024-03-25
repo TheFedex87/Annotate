@@ -25,5 +25,6 @@ interface NotesRepository {
     suspend fun removeNotes(ids: List<Long>): Result<Unit, DataError>
     suspend fun removeNote(id: Long): Result<Unit, DataError>
     suspend fun addEditNote(note: NoteDomainModel): Result<Long, DataError>
+    suspend fun moveNotesToBlockNote(notes: List<Long>, blockNote: Long): Result<Unit, DataError>
     suspend fun updateNotesOrderBy(orderBy: OrderBy)
 }

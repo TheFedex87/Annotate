@@ -13,6 +13,7 @@ import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.error_handling.Result
 import it.thefedex87.notes_domain.repository.NotesRepository
+import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.notes_presentation.note.model.toNoteUiModel
 import it.thefedex87.notes_presentation.note.screens.asErrorUiText
 import it.thefedex87.notes_utils.NotesConsts
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -219,6 +221,60 @@ class NotesOfBlockNoteViewModel @Inject constructor(
                                 }
                             }
                         }
+                }
+
+                is NotesOfBlockNoteEvent.OnMoveNotesRequested -> {
+                    val blockNotes = repository.blockNotes().first().map {
+                        it.toBlockNoteUiModel(false)
+                    }
+                    _state.update {
+                        it.copy(
+                            showMoveNotesDialog = true,
+                            availableBlockNotes = blockNotes,
+                            selectedBlockNoteToMoveNotes = repository.blockNotes().first().first().id
+                        )
+                    }
+                }
+
+                is NotesOfBlockNoteEvent.OnMoveNotesCanceled -> {
+                    _state.update {
+                        it.copy(
+                            showMoveNotesDialog = false,
+                            moveNotesBlockNotesExpanded = false,
+                            selectedBlockNoteToMoveNotes = null
+                        )
+                    }
+                }
+
+                is NotesOfBlockNoteEvent.OnMoveNotesNewBlockNoteSelected -> {
+                    _state.update {
+                        it.copy(
+                            selectedBlockNoteToMoveNotes = event.id,
+                            moveNotesBlockNotesExpanded = false
+                        )
+                    }
+                }
+
+                is NotesOfBlockNoteEvent.ExpandMoveNotesBlockNotesList -> {
+                    _state.update {
+                        it.copy(
+                            moveNotesBlockNotesExpanded = event.isExpanded
+                        )
+                    }
+                }
+
+                is NotesOfBlockNoteEvent.OnMoveNotesConfirmed -> {
+                    repository.moveNotesToBlockNote(
+                        notes = state.value.notes.filter { it.isSelected }.map { it.id },
+                        blockNote = state.value.selectedBlockNoteToMoveNotes!!
+                    )
+                    _state.update {
+                        it.copy(
+                            moveNotesBlockNotesExpanded = false,
+                            showMoveNotesDialog = false,
+                            selectedBlockNoteToMoveNotes = null
+                        )
+                    }
                 }
             }
         }

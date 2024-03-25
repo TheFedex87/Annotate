@@ -4,6 +4,7 @@ import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.DateOrderType
 import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.notes_presentation.block_note.model.BlockNoteUiModel
 import it.thefedex87.notes_presentation.note.model.NoteUiModel
 
 data class NotesOfBlockNoteState(
@@ -13,5 +14,11 @@ data class NotesOfBlockNoteState(
     val orderBy: OrderBy = OrderBy.CreatedAt(DateOrderType.RECENT),
     val isOrderByExpanded: Boolean = false,
     val isMultiSelectionActive: Boolean = false,
-    val showConfirmDeleteDialog: Boolean = false
+    val showConfirmDeleteDialog: Boolean = false,
+
+    // Move of notes to another blocknote states
+    val showMoveNotesDialog: Boolean = false,
+    val moveNotesBlockNotesExpanded: Boolean = false,
+    val selectedBlockNoteToMoveNotes: Long? = null,
+    val availableBlockNotes: List<BlockNoteUiModel> = emptyList()
 )

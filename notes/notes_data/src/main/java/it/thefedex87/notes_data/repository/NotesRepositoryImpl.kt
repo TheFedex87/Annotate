@@ -128,6 +128,18 @@ class NotesRepositoryImpl(
         }
     }
 
+    override suspend fun moveNotesToBlockNote(notes: List<Long>, blockNote: Long): Result<Unit, DataError> {
+        return try {
+            notes.forEach {
+                noteDao.moveNote(it, blockNote)
+            }
+
+            Result.Success(Unit)
+        } catch (ex: Exception) {
+            Result.Error(DataError.Local.SAVE_INTO_DB_ERROR)
+        }
+    }
+
     override suspend fun removeNote(id: Long): Result<Unit, DataError.Local> {
         return try {
             noteDao.removeNote(id)

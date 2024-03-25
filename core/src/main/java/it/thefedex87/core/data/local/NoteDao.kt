@@ -30,4 +30,7 @@ interface NoteDao {
 
     @Query("DELETE FROM NoteEntity WHERE id == :id")
     suspend fun removeNote(id: Long)
+
+    @Query("UPDATE NoteEntity SET blockNoteId = :blockNoteId WHERE id = :id")
+    suspend fun moveNote(id: Long, blockNoteId: Long)
 }

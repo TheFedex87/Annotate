@@ -18,4 +18,11 @@ sealed interface NotesOfBlockNoteEvent {
     data object OnRemoveSelectedNotesClicked : NotesOfBlockNoteEvent
     data object OnRemoveSelectedNotesConfirmed : NotesOfBlockNoteEvent
     data object OnRemoveSelectedNotesCanceled : NotesOfBlockNoteEvent
+
+    // Move notes to another block note events
+    data object OnMoveNotesRequested : NotesOfBlockNoteEvent
+    data object OnMoveNotesCanceled : NotesOfBlockNoteEvent
+    data object OnMoveNotesConfirmed : NotesOfBlockNoteEvent
+    data class OnMoveNotesNewBlockNoteSelected(val id: Long) : NotesOfBlockNoteEvent
+    data class ExpandMoveNotesBlockNotesList(val isExpanded: Boolean) : NotesOfBlockNoteEvent
 }
