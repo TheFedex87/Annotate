@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.ImportExport
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -32,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core.R
@@ -257,10 +259,21 @@ private fun ComposeMainScreenState(
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.add_knote)
+                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.remove_notes)
                             )
                         }
                     } else {
+                        IconButton(onClick = {
+                            onNotesEvent(
+                                NotesOfBlockNoteEvent.OnRemoveSelectedNotesClicked
+                            )
+                        }, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                painter = painterResource(id = it.thefedex87.notes_presentation.R.drawable.export_notes),
+                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.move_notes)
+                            )
+                        }
+
                         IconButton(onClick = {
                             onNotesEvent(
                                 NotesOfBlockNoteEvent.OnRemoveSelectedNotesClicked

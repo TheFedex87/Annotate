@@ -50,7 +50,10 @@ fun NotesList(
             ) {
                 NoteListTile(
                     note = it,
-                    onNoteClicked
+                    onNoteClicked = onNoteClicked,
+                    onNoteLongClicked = onNoteLongClicked,
+                    isMultiSelectionActive = isMultiSelectionActive,
+                    selectionChanged = onSelectionChanged
                 )
             }
         }

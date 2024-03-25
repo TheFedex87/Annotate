@@ -59,7 +59,7 @@ fun BlockNoteGridTile(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.book),
+                    painter = painterResource(id = R.drawable.notebook),
                     contentDescription = name,
                     colorFilter = ColorFilter.tint(
                         color = Color(color)
