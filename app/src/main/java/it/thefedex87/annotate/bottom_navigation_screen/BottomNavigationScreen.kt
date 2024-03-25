@@ -97,10 +97,13 @@ fun BottomNavigationScreen(
     ) { values ->
         NavHost(
             navController = navController,
-            startDestination = BottomNavScreen.Notebooks.route,
+            startDestination = Routes.RECENT_NOTES,
             modifier = modifier.padding(values)
         ) {
-            composable(route = BottomNavScreen.Notebooks.route) {
+            composable(route = Routes.RECENT_NOTES) {
+                Text(text = "Recents")
+            }
+            composable(route = Routes.NOTEBOOKS) {
                 val viewModel = hiltViewModel<BlockNotesViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -139,9 +142,6 @@ fun BottomNavigationScreen(
                     uiEvent = viewModel.uiEvent,
                     snackbarHostState = snackbarHostState
                 )
-            }
-            composable(route = BottomNavScreen.RecentNotes.route) {
-                Text(text = "Recents")
             }
             composable(
                 route = "${Routes.NOTES_OF_BLOCK_NOTE}/{blockNoteId}",
