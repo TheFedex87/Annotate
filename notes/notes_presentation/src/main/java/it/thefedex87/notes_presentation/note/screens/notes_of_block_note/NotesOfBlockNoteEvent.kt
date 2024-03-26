@@ -8,7 +8,7 @@ sealed interface NotesOfBlockNoteEvent {
     data class OnVisualizationTypeChanged(val visualizationType: VisualizationType) :
         NotesOfBlockNoteEvent
 
-    data class OnNoteClicked(val id: Long) : NotesOfBlockNoteEvent
+    data class OnNoteClicked(val id: Long, val blockNoteId: Long) : NotesOfBlockNoteEvent
 
     data class OnOrderByChanged(val orderBy: OrderBy) : NotesOfBlockNoteEvent
     data class ExpandOrderByMenuChanged(val isExpanded: Boolean) : NotesOfBlockNoteEvent

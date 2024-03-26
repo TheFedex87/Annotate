@@ -16,7 +16,7 @@ import it.thefedex87.notes_presentation.note.model.NoteUiModel
 fun NotesList(
     notes: List<NoteUiModel>,
     visualizationType: VisualizationType,
-    onNoteClicked: (Long) -> Unit,
+    onNoteClicked: (Long, Long) -> Unit,
     onNoteLongClicked: (Long) -> Unit,
     onSelectionChanged: (Long, Boolean) -> Unit,
     isMultiSelectionActive: Boolean,

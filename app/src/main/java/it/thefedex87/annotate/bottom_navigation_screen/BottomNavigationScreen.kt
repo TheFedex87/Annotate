@@ -53,6 +53,8 @@ import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteVi
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteEvent
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteScreen
 import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteViewModel
+import it.thefedex87.notes_presentation.note.screens.recent.RecentNotesScreen
+import it.thefedex87.notes_presentation.note.screens.recent.RecentNotesViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -101,7 +103,29 @@ fun BottomNavigationScreen(
             modifier = modifier.padding(values)
         ) {
             composable(route = Routes.RECENT_NOTES) {
-                Text(text = "Recents")
+                val viewModel = hiltViewModel<RecentNotesViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                RecentNotesScreen(
+                    state = state,
+                    onComposed = {
+                        mainScreenState = it.copy(
+                            topBarBackPressed = null
+                        )
+                    },
+                    uiEvent = viewModel.uiEvent,
+                    snackbarHostState = snackbarHostState,
+                    currentMainScreenState = mainScreenState,
+                    onNotesEvent = {
+                        if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {
+                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
+                        } else if(it is NotesOfBlockNoteEvent.OnNoteClicked) {
+                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
+                        } else {
+                            viewModel.onEvent(it)
+                        }
+                    }
+                )
+
             }
             composable(route = Routes.NOTEBOOKS) {
                 val viewModel = hiltViewModel<BlockNotesViewModel>()
@@ -154,7 +178,6 @@ fun BottomNavigationScreen(
                 val viewModel = hiltViewModel<NotesOfBlockNoteViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 Log.d(Consts.TAG, "Received new state: $state")
-                val blockNoteId = it.arguments?.getLong("blockNoteId")
 
                 NotesOfBlockNoteScreen(
                     state = state,
@@ -172,7 +195,7 @@ fun BottomNavigationScreen(
                         if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {
                             navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
                         } else if(it is NotesOfBlockNoteEvent.OnNoteClicked) {
-                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${blockNoteId}?noteId=${it.id}")
+                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
                         } else {
                             viewModel.onEvent(it)
                         }

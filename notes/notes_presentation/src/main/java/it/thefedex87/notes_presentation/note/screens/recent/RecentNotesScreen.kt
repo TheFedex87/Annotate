@@ -1,8 +1,7 @@
-package it.thefedex87.notes_presentation.note.screens.notes_of_block_note
+package it.thefedex87.notes_presentation.note.screens.recent
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.DateOrderType
 import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
@@ -43,17 +41,19 @@ import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.components.SimpleDeleteDialog
 import it.thefedex87.core_ui.events.UiEvent
+import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.note.components.MoveNotesDialog
 import it.thefedex87.notes_presentation.note.components.NotesList
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteEvent
+import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import it.thefedex87.notes_presentation.R as NotesResources
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesOfBlockNoteScreen(
-    state: NotesOfBlockNoteState,
+fun RecentNotesScreen(
+    state: RecentNotesState,
     onComposed: (MainScreenState) -> Unit,
     uiEvent: Flow<UiEvent>,
     snackbarHostState: SnackbarHostState?,
@@ -91,8 +91,8 @@ fun NotesOfBlockNoteScreen(
 
     if (state.showConfirmDeleteDialog) {
         SimpleDeleteDialog(
-            title = stringResource(id = NotesResources.string.remove_notes),
-            body = stringResource(id = NotesResources.string.remove_notes_confirm_body),
+            title = stringResource(id = R.string.remove_notes),
+            body = stringResource(id = R.string.remove_notes_confirm_body),
             onConfirmClicked = {
                 onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesConfirmed)
             },
@@ -138,12 +138,12 @@ fun NotesOfBlockNoteScreen(
     Box(modifier = modifier.fillMaxSize()) {
         Column {
             val currentOrderByStr = when (state.orderBy) {
-                OrderBy.Title -> stringResource(id = NotesResources.string.title)
-                OrderBy.CreatedAt(DateOrderType.OLDER) -> stringResource(id = NotesResources.string.creation_date_older)
-                OrderBy.CreatedAt(DateOrderType.RECENT) -> stringResource(id = NotesResources.string.creation_date_recent)
-                OrderBy.UpdatedAt(DateOrderType.OLDER) -> stringResource(id = NotesResources.string.updated_date_older)
-                OrderBy.UpdatedAt(DateOrderType.RECENT) -> stringResource(id = NotesResources.string.updated_date_recent)
-                else -> stringResource(id = NotesResources.string.creation_date_older)
+                OrderBy.Title -> stringResource(id = R.string.title)
+                OrderBy.CreatedAt(DateOrderType.OLDER) -> stringResource(id = R.string.creation_date_older)
+                OrderBy.CreatedAt(DateOrderType.RECENT) -> stringResource(id = R.string.creation_date_recent)
+                OrderBy.UpdatedAt(DateOrderType.OLDER) -> stringResource(id = R.string.updated_date_older)
+                OrderBy.UpdatedAt(DateOrderType.RECENT) -> stringResource(id = R.string.updated_date_recent)
+                else -> stringResource(id = R.string.creation_date_older)
             }
 
             ExposedDropdownMenuBox(
@@ -182,12 +182,12 @@ fun NotesOfBlockNoteScreen(
                     onNotesEvent(NotesOfBlockNoteEvent.ExpandOrderByMenuChanged(false))
                 }) {
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.title)) },
+                        text = { Text(text = stringResource(id = R.string.title)) },
                         onClick = {
                             onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.Title))
                         })
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_recent)) },
+                        text = { Text(text = stringResource(id = R.string.creation_date_recent)) },
                         onClick = {
                             onNotesEvent(
                                 NotesOfBlockNoteEvent.OnOrderByChanged(
@@ -198,7 +198,7 @@ fun NotesOfBlockNoteScreen(
                             )
                         })
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_older)) },
+                        text = { Text(text = stringResource(id = R.string.creation_date_older)) },
                         onClick = {
                             onNotesEvent(
                                 NotesOfBlockNoteEvent.OnOrderByChanged(
@@ -209,7 +209,7 @@ fun NotesOfBlockNoteScreen(
                             )
                         })
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_recent)) },
+                        text = { Text(text = stringResource(id = R.string.updated_date_recent)) },
                         onClick = {
                             onNotesEvent(
                                 NotesOfBlockNoteEvent.OnOrderByChanged(
@@ -220,7 +220,7 @@ fun NotesOfBlockNoteScreen(
                             )
                         })
                     DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_older)) },
+                        text = { Text(text = stringResource(id = R.string.updated_date_older)) },
                         onClick = {
                             onNotesEvent(
                                 NotesOfBlockNoteEvent.OnOrderByChanged(
@@ -264,35 +264,31 @@ fun NotesOfBlockNoteScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ComposeMainScreenState(
-    state: NotesOfBlockNoteState,
+    state: RecentNotesState,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
     onNotesEvent: (NotesOfBlockNoteEvent) -> Unit,
 ) {
-    val appBarTitle = if (state.blockNote == null)
-        stringResource(id = R.string.app_name)
-    else
-        state.blockNote.name
+    val appTitle = stringResource(id = it.thefedex87.core.R.string.app_name)
 
     LaunchedEffect(
-        key1 = state,
-        key2 = appBarTitle
+        key1 = state
     ) {
         onComposed(
             currentMainScreenState.copy(
-                topBarTitle = appBarTitle,
+                topBarTitle = appTitle,
                 topBarVisible = true,
                 bottomBarVisible = true,
                 topBarActions = {
                     if (!state.isMultiSelectionActive) {
                         IconButton(onClick = {
                             onNotesEvent(
-                                NotesOfBlockNoteEvent.OnAddNewNoteClicked(state.blockNote?.id ?: 0)
+                                NotesOfBlockNoteEvent.OnAddNewNoteClicked(1)
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.remove_notes)
+                                contentDescription = stringResource(id = R.string.remove_notes)
                             )
                         }
                     } else {
@@ -302,8 +298,8 @@ private fun ComposeMainScreenState(
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
-                                painter = painterResource(id = it.thefedex87.notes_presentation.R.drawable.export_notes),
-                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.move_notes)
+                                painter = painterResource(id = R.drawable.export_notes),
+                                contentDescription = stringResource(id = R.string.move_notes)
                             )
                         }
 
@@ -314,7 +310,7 @@ private fun ComposeMainScreenState(
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.remove_notes)
+                                contentDescription = stringResource(id = R.string.remove_notes)
                             )
                         }
                     }
@@ -329,7 +325,7 @@ private fun ComposeMainScreenState(
                             }, modifier = Modifier.size(48.dp)) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Default.List,
-                                    contentDescription = stringResource(id = R.string.list_view)
+                                    contentDescription = stringResource(id = it.thefedex87.core.R.string.list_view)
                                 )
                             }
                         }
@@ -344,7 +340,7 @@ private fun ComposeMainScreenState(
                             }, modifier = Modifier.size(48.dp)) {
                                 Icon(
                                     imageVector = Icons.Default.GridView,
-                                    contentDescription = stringResource(id = R.string.grid_view)
+                                    contentDescription = stringResource(id = it.thefedex87.core.R.string.grid_view)
                                 )
                             }
                         }

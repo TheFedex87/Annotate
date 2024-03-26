@@ -34,7 +34,7 @@ import it.thefedex87.notes_presentation.note.model.NoteUiModel
 @Composable
 fun NoteGridTile(
     note: NoteUiModel,
-    onNoteClicked: (Long) -> Unit,
+    onNoteClicked: (Long, Long) -> Unit,
     onNoteLongClicked: (Long) -> Unit,
     isMultiSelectionActive: Boolean,
     selectionChanged: (Long, Boolean) -> Unit,
@@ -56,7 +56,7 @@ fun NoteGridTile(
             .scale(scale.value)
             .combinedClickable(
                 onClick = {
-                    onNoteClicked(note.id)
+                    onNoteClicked(note.id, note.blockNoteUiModel.id)
                 },
                 onLongClick = {
                     onNoteLongClicked(note.id)

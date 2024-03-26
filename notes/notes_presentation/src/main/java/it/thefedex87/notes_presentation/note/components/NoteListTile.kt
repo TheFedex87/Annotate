@@ -29,7 +29,7 @@ import java.time.LocalDateTime
 @Composable
 fun NoteListTile(
     note: NoteUiModel,
-    onNoteClicked: (Long) -> Unit,
+    onNoteClicked: (Long, Long) -> Unit,
     onNoteLongClicked: (Long) -> Unit,
     isMultiSelectionActive: Boolean,
     selectionChanged: (Long, Boolean) -> Unit,
@@ -43,7 +43,7 @@ fun NoteListTile(
             .padding(spacing.spaceSmall)
             .combinedClickable(
                 onClick = {
-                    onNoteClicked(note.id)
+                    onNoteClicked(note.id, note.blockNoteUiModel.id)
                 },
                 onLongClick = {
                     onNoteLongClicked(note.id)
@@ -94,7 +94,7 @@ fun NoteListTilePreview() {
             updatedAt = LocalDateTime.now()
         )
     ),
-        onNoteClicked = {},
+        onNoteClicked = {id, blockNoteId -> },
         onNoteLongClicked = {},
         isMultiSelectionActive = true,
         selectionChanged = {l, b -> })

@@ -19,6 +19,7 @@ import it.thefedex87.notes_domain.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import it.thefedex87.error_handling.Result
+import kotlinx.coroutines.flow.first
 
 class NotesRepositoryImpl(
     val blockNoteDao: BlockNoteDao,
@@ -156,5 +157,19 @@ class NotesRepositoryImpl(
 
     override suspend fun updateNotesOrderBy(orderBy: OrderBy) {
         notesPreferencesManager.updateNotesOrderBy(orderBy)
+    }
+
+    override fun recentNotes(top: Int): Flow<List<NoteDomainModel>> {
+        val blockNotes = mutableListOf<BlockNoteDomainModel>()
+        return noteDao.getRecentUpdateNotes().map {
+            it.map { note ->
+                var blockNote = blockNotes.firstOrNull { it.id == note.id }
+                if(blockNote == null) {
+                    blockNote = blockNotes().first().first { it.id == note.blockNoteId }
+                    blockNotes.add(blockNote)
+                }
+                note.toNoteDomainModel(blockNote)
+            }
+        }
     }
 }
