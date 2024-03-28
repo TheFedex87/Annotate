@@ -7,7 +7,7 @@ fun NoteDomainModel.toNoteUiModel(isSelected: Boolean = false): NoteUiModel =
     NoteUiModel(
         id = id!!,
         title = title,
-        body = body,
+        body = note,
         createdAt = createdAt,
         updatedAt = updatedAt,
         blockNoteUiModel = blockNote.toBlockNoteUiModel(),

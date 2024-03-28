@@ -1,13 +1,13 @@
 package it.thefedex87.notes_presentation.note.screens.add_edit_note
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import it.thefedex87.core.domain.model.NoteDomainModel
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.error_handling.Result.Error
 import it.thefedex87.error_handling.Result.Success
@@ -16,11 +16,8 @@ import it.thefedex87.notes_utils.NotesConsts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,30 +38,21 @@ class AddEditNoteViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(
         AddEditNoteState(
-            noteState = TextFieldState(
+            /*note = TextFieldState(
                 initialText = savedStateHandle[NotesConsts.ADD_EDIT_NOTE_BODY_SAVED_STATE_HANDLE_KEY]
                     ?: ""
-            ),
-            blockNoteId = savedStateHandle["blockNoteId"]!!,
+            ),*/
+            blockNoteId = savedStateHandle[NotesConsts.BLOCK_NOTE_ID]!!,
             noteId = savedStateHandle[NotesConsts.NOTE_ID]
         )
     )
 
-    private val savedStateHandleFlows = savedStateHandle.getStateFlow(
-        NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY,
-        ""
-    )
-
-    val state = combine(
-        _state,
-        savedStateHandleFlows
-    ) { state, title ->
-        Pair(state, title)
-    }.mapLatest { (state, title) ->
+    val state = _state.mapLatest { state ->
         AddEditNoteState(
-            title = title,
+            title = state.title,
+            note = state.note,
             createdAt = state.createdAt,
-            noteState = state.noteState
+            blockNoteName = state.blockNoteName
         )
     }.stateIn(
         viewModelScope,
@@ -72,20 +60,10 @@ class AddEditNoteViewModel @Inject constructor(
         AddEditNoteState()
     )
 
-    private var userEdit = false
     private var originalTitle = ""
     private var originalBody = ""
 
     init {
-        _state.value.noteState.textAsFlow().onEach {
-            if(!userEdit && originalBody != it.toString()) {
-                userEdit = true
-            }
-            savedStateHandle[NotesConsts.ADD_EDIT_NOTE_BODY_SAVED_STATE_HANDLE_KEY] =
-                it.toString()
-            storeNote()
-        }.launchIn(viewModelScope)
-
         _state.value.noteId?.let { noteId ->
             viewModelScope.launch {
                 if (noteId > 0) {
@@ -93,31 +71,26 @@ class AddEditNoteViewModel @Inject constructor(
                         .firstOrNull { it.id == _state.value.blockNoteId }
                         ?.let { blocknote ->
                             val note = repository.getNote(noteId, blocknote)
-                            when(note) {
+                            Log.d(Consts.TAG, "Reading note on process death from repo: $note")
+                            when (note) {
                                 is Error -> {
                                     _uiEvents.send(UiEvent.ShowSnackBar(note.asErrorUiText()))
                                 }
+
                                 is Success -> {
-                                    originalBody = note.data.body
+                                    originalBody = note.data.note
                                     originalTitle = note.data.title
 
-                                    _state.value.noteState.edit {
-                                        replace(
-                                            0,
-                                            _state.value.noteState.text.length,
-                                            note.data.body
-                                        )
-                                    }
                                     _state.update {
                                         it.copy(
-                                            createdAt = note.data.createdAt
+                                            createdAt = note.data.createdAt,
+                                            blockNoteName = blocknote.name,
+                                            note = note.data.note,
+                                            title = note.data.title
                                         )
                                     }
-                                    savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY] =
-                                        note.data.title
                                 }
                             }
-
                         }
                 }
             }
@@ -129,9 +102,20 @@ class AddEditNoteViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is AddEditNoteEvent.OnTitleChanged -> {
-                    userEdit = true
-                    savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY] =
-                        event.title
+                    _state.update {
+                        it.copy(
+                            title = event.title
+                        )
+                    }
+                    storeNote()
+                }
+
+                is AddEditNoteEvent.OnNoteChanged -> {
+                    _state.update {
+                        it.copy(
+                            note = event.note
+                        )
+                    }
                     storeNote()
                 }
 
@@ -161,26 +145,24 @@ class AddEditNoteViewModel @Inject constructor(
     }
 
     private suspend fun storeNote() {
-        if(!userEdit) return
-
         val currentId = savedStateHandle.get<Long>(NotesConsts.NOTE_ID)
-        if (_state.value.noteState.text.isNotEmpty() ||
-            savedStateHandle.get<String>(NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY) != ""
+        if (_state.value.note != "" ||
+            _state.value.title != ""
         ) {
             repository.blockNotes().first().firstOrNull { it.id == _state.value.blockNoteId }
                 ?.let { blocknote ->
+                    Log.d(Consts.TAG, "Storing note on process death")
                     val result = repository.addEditNote(
                         NoteDomainModel(
                             id = if (currentId == 0L) null else currentId,
-                            title = savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY]
-                                ?: "",
-                            body = _state.value.noteState.text.toString(),
+                            title = _state.value.title,
+                            note = _state.value.note,
                             blockNote = blocknote,
                             createdAt = _state.value.createdAt,
                             updatedAt = LocalDateTime.now()
                         )
                     )
-                    when(result) {
+                    when (result) {
                         is Error -> {
                             _uiEvents.send(
                                 UiEvent.ShowSnackBar(
@@ -188,6 +170,7 @@ class AddEditNoteViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is Success -> {
                             savedStateHandle[NotesConsts.NOTE_ID] = result.data
                         }
@@ -197,8 +180,7 @@ class AddEditNoteViewModel @Inject constructor(
         } else {
             currentId?.let {
                 if (it > 0) {
-                    val result = repository.removeNote(it)
-                    when(result) {
+                    when (val result = repository.removeNote(it)) {
                         is Error -> {
                             _uiEvents.send(
                                 UiEvent.ShowSnackBar(
@@ -206,6 +188,7 @@ class AddEditNoteViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is Success -> Unit
                     }
                 }

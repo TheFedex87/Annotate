@@ -8,7 +8,8 @@ import java.time.LocalDateTime
 data class AddEditNoteState(
     val noteId: Long? = null,
     val blockNoteId: Long = 0,
+    val blockNoteName: String = "",
     val title: String = "",
-    val noteState: TextFieldState = TextFieldState(),
+    val note: String = "",
     val createdAt: LocalDateTime = LocalDateTime.now()
 )

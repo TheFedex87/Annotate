@@ -56,10 +56,11 @@ import java.time.LocalDateTime
 @Composable
 fun AddEditNoteScreen(
     title: String,
+    note: String,
     onAddEditNoteEvent: (AddEditNoteEvent) -> Unit,
+    parentBlockNoteName: String,
     snackbarHostState: SnackbarHostState?,
     uiEvent: Flow<UiEvent>,
-    note: TextFieldState,
     createdAt: LocalDateTime,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
@@ -82,23 +83,12 @@ fun AddEditNoteScreen(
         }.launchIn(this)
     }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = parentBlockNoteName) {
         onComposed(
             currentMainScreenState.copy(
                 bottomBarVisible = false,
-                topBarTitle = "",
-                topBarActions = {
-                    /*IconButton(onClick = {
-                        onAddEditNoteEvent(
-                            AddEditNoteEvent.OnSaveNoteClicked
-                        )
-                    }, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.Save,
-                            contentDescription = stringResource(id = R.string.save_note)
-                        )
-                    }*/
-                }
+                topBarTitle = parentBlockNoteName,
+                topBarActions = null
             )
         )
     }
@@ -122,7 +112,7 @@ fun AddEditNoteScreen(
     Box(modifier = modifier
         .fillMaxSize()
         .pointerInput(true) {
-            awaitPointerEventScope {
+            /*awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent()
                     // handle pointer event
@@ -133,7 +123,7 @@ fun AddEditNoteScreen(
                         //focusRequester.requestFocus()
                     }
                 }
-            }
+            }*/
         }
     ) {
         Column(
@@ -187,14 +177,17 @@ fun AddEditNoteScreen(
             )
             Spacer(modifier = Modifier.height(spacing.spaceSmall))
             BasicTextField2(
-                state = note,
+                value = note,
+                onValueChange = {
+                    onAddEditNoteEvent(AddEditNoteEvent.OnNoteChanged(it))
+                },
                 lineLimits = TextFieldLineLimits.MultiLine(),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 16.sp
                 ),
                 decorator = { innerText ->
-                    if (note.text.isEmpty()) {
+                    if (note.isEmpty()) {
                         Text(
                             text = stringResource(id = R.string.note_placeholder),
                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -224,9 +217,10 @@ fun AddEditNoteScreenPreview() {
     AddEditNoteScreen(
         title = "Test",
         onAddEditNoteEvent = {},
+        parentBlockNoteName = "Default",
         uiEvent = flow {  },
         snackbarHostState = SnackbarHostState(),
-        note = TextFieldState(initialText = "Nota prova nota \n egfg"),
+        note = "",
         createdAt = LocalDateTime.now(),
         currentMainScreenState = MainScreenState(),
         onComposed = {}
