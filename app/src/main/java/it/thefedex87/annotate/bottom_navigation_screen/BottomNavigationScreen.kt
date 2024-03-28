@@ -46,15 +46,13 @@ import it.thefedex87.annotate.R
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
-import it.thefedex87.notes_presentation.block_note.BlockNotesView
+import it.thefedex87.notes_presentation.block_note.BlockNotesScreen
 import it.thefedex87.notes_presentation.block_note.BlockNotesViewModel
 import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteScreen
 import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteViewModel
-import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteEvent
-import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteScreen
-import it.thefedex87.notes_presentation.note.screens.notes_of_block_note.NotesOfBlockNoteViewModel
-import it.thefedex87.notes_presentation.note.screens.recent.RecentNotesScreen
-import it.thefedex87.notes_presentation.note.screens.recent.RecentNotesViewModel
+import it.thefedex87.notes_presentation.note.screens.NotesEvent
+import it.thefedex87.notes_presentation.note.screens.NotesScreen
+import it.thefedex87.notes_presentation.note.screens.NotesViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -103,9 +101,11 @@ fun BottomNavigationScreen(
             modifier = modifier.padding(values)
         ) {
             composable(route = Routes.RECENT_NOTES) {
-                val viewModel = hiltViewModel<RecentNotesViewModel>()
+                val viewModel = hiltViewModel<NotesViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
-                RecentNotesScreen(
+                Log.d(Consts.TAG, "Received new state: $state")
+
+                NotesScreen(
                     state = state,
                     onComposed = {
                         mainScreenState = it.copy(
@@ -116,12 +116,18 @@ fun BottomNavigationScreen(
                     snackbarHostState = snackbarHostState,
                     currentMainScreenState = mainScreenState,
                     onNotesEvent = {
-                        if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {
-                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
-                        } else if(it is NotesOfBlockNoteEvent.OnNoteClicked) {
-                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
-                        } else {
-                            viewModel.onEvent(it)
+                        when (it) {
+                            is NotesEvent.OnAddNewNoteClicked -> {
+                                navController.navigate("${Routes.ADD_EDIT_NOTE}/1")
+                            }
+
+                            is NotesEvent.OnNoteClicked -> {
+                                navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
+                            }
+
+                            else -> {
+                                viewModel.onEvent(it)
+                            }
                         }
                     }
                 )
@@ -145,7 +151,7 @@ fun BottomNavigationScreen(
                     }
                 } */
 
-                BlockNotesView(
+                BlockNotesScreen(
                     // blockNotes = blockNotes,
                     // query = query,
                     state = state,
@@ -175,11 +181,11 @@ fun BottomNavigationScreen(
                     }
                 )
             ) {
-                val viewModel = hiltViewModel<NotesOfBlockNoteViewModel>()
+                val viewModel = hiltViewModel<NotesViewModel>()
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 Log.d(Consts.TAG, "Received new state: $state")
 
-                NotesOfBlockNoteScreen(
+                NotesScreen(
                     state = state,
                     onComposed = {
                         mainScreenState = it.copy(
@@ -192,9 +198,9 @@ fun BottomNavigationScreen(
                     snackbarHostState = snackbarHostState,
                     currentMainScreenState = mainScreenState,
                     onNotesEvent = {
-                        if (it is NotesOfBlockNoteEvent.OnAddNewNoteClicked) {
+                        if (it is NotesEvent.OnAddNewNoteClicked) {
                             navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
-                        } else if(it is NotesOfBlockNoteEvent.OnNoteClicked) {
+                        } else if(it is NotesEvent.OnNoteClicked) {
                             navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
                         } else {
                             viewModel.onEvent(it)
@@ -219,10 +225,11 @@ fun BottomNavigationScreen(
 
                 AddEditNoteScreen(
                     title = state.title,
+                    note = state.note,
                     onAddEditNoteEvent = viewModel::onEvent,
+                    parentBlockNoteName = state.blockNoteName,
                     snackbarHostState = snackbarHostState,
                     uiEvent = viewModel.uiEvent,
-                    note = state.noteState,
                     createdAt = state.createdAt,
                     currentMainScreenState = mainScreenState,
                     onComposed = {

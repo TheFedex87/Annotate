@@ -1,4 +1,4 @@
-package it.thefedex87.notes_presentation.note.screens.notes_of_block_note
+package it.thefedex87.notes_presentation.note.screens
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.GridView
+import androidx.compose.material.icons.filled.NoteAdd
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -52,17 +54,17 @@ import it.thefedex87.notes_presentation.R as NotesResources
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NotesOfBlockNoteScreen(
-    state: NotesOfBlockNoteState,
+fun NotesScreen(
+    state: NotesState,
     onComposed: (MainScreenState) -> Unit,
     uiEvent: Flow<UiEvent>,
     snackbarHostState: SnackbarHostState?,
     currentMainScreenState: MainScreenState,
-    onNotesEvent: (NotesOfBlockNoteEvent) -> Unit,
+    onNotesEvent: (NotesEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     BackHandler(enabled = state.isMultiSelectionActive) {
-        onNotesEvent(NotesOfBlockNoteEvent.DeselectAllNotes)
+        onNotesEvent(NotesEvent.DeselectAllNotes)
     }
 
     val context = LocalContext.current
@@ -94,10 +96,10 @@ fun NotesOfBlockNoteScreen(
             title = stringResource(id = NotesResources.string.remove_notes),
             body = stringResource(id = NotesResources.string.remove_notes_confirm_body),
             onConfirmClicked = {
-                onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesConfirmed)
+                onNotesEvent(NotesEvent.OnRemoveSelectedNotesConfirmed)
             },
             onDismiss = {
-                onNotesEvent(NotesOfBlockNoteEvent.OnRemoveSelectedNotesCanceled)
+                onNotesEvent(NotesEvent.OnRemoveSelectedNotesCanceled)
             }
         )
     }
@@ -106,30 +108,30 @@ fun NotesOfBlockNoteScreen(
         MoveNotesDialog(
             onDismissDialog = {
                 onNotesEvent(
-                    NotesOfBlockNoteEvent.OnMoveNotesCanceled
+                    NotesEvent.OnMoveNotesCanceled
                 )
             },
             onConfirmClicked = {
                 onNotesEvent(
-                    NotesOfBlockNoteEvent.OnMoveNotesConfirmed
+                    NotesEvent.OnMoveNotesConfirmed
                 )
             },
             expanded = state.moveNotesBlockNotesExpanded,
             onExpandedChanged = {
                 onNotesEvent(
-                    NotesOfBlockNoteEvent.ExpandMoveNotesBlockNotesList(it)
+                    NotesEvent.ExpandMoveNotesBlockNotesList(it)
                 )
             },
             selectedBlockNoteId = state.selectedBlockNoteToMoveNotes,
             availableBlockNotes = state.availableBlockNotes,
             onDismissBlockNotesList = {
                 onNotesEvent(
-                    NotesOfBlockNoteEvent.ExpandMoveNotesBlockNotesList(false)
+                    NotesEvent.ExpandMoveNotesBlockNotesList(false)
                 )
             },
             onBlockNoteSelected = {
                 onNotesEvent(
-                    NotesOfBlockNoteEvent.OnMoveNotesNewBlockNoteSelected(it)
+                    NotesEvent.OnMoveNotesNewBlockNoteSelected(it)
                 )
             }
         )
@@ -146,102 +148,105 @@ fun NotesOfBlockNoteScreen(
                 else -> stringResource(id = NotesResources.string.creation_date_older)
             }
 
-            ExposedDropdownMenuBox(
-                modifier = Modifier.align(Alignment.End),
-                expanded = state.isOrderByExpanded,
-                onExpandedChange = {
-                    onNotesEvent(NotesOfBlockNoteEvent.ExpandOrderByMenuChanged(it))
-                }) {
-                BasicTextField(
-                    value = currentOrderByStr,
-                    onValueChange = {},
-                    readOnly = true,
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    decorationBox = { innerText ->
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box {
-                                innerText()
+            if(state.showOrderByCombo) {
+                ExposedDropdownMenuBox(
+                    modifier = Modifier.align(Alignment.End),
+                    expanded = state.isOrderByExpanded,
+                    onExpandedChange = {
+                        onNotesEvent(NotesEvent.ExpandOrderByMenuChanged(it))
+                    }) {
+                    BasicTextField(
+                        value = currentOrderByStr,
+                        onValueChange = {},
+                        readOnly = true,
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
+                        decorationBox = { innerText ->
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box {
+                                    innerText()
+                                }
+                                Icon(
+                                    imageVector = if (!state.isOrderByExpanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
+                                    contentDescription = null
+                                )
                             }
-                            Icon(
-                                imageVector = if (!state.isOrderByExpanded) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
-                                contentDescription = null
-                            )
-                        }
-                    },
-                    //trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .widthIn(min = 200.dp)
-                )
-                ExposedDropdownMenu(expanded = state.isOrderByExpanded, onDismissRequest = {
-                    onNotesEvent(NotesOfBlockNoteEvent.ExpandOrderByMenuChanged(false))
-                }) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.title)) },
-                        onClick = {
-                            onNotesEvent(NotesOfBlockNoteEvent.OnOrderByChanged(OrderBy.Title))
-                        })
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_recent)) },
-                        onClick = {
-                            onNotesEvent(
-                                NotesOfBlockNoteEvent.OnOrderByChanged(
-                                    OrderBy.CreatedAt(
-                                        DateOrderType.RECENT
+                        },
+                        //trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .widthIn(min = 200.dp)
+                    )
+                    ExposedDropdownMenu(expanded = state.isOrderByExpanded, onDismissRequest = {
+                        onNotesEvent(NotesEvent.ExpandOrderByMenuChanged(false))
+                    }) {
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = NotesResources.string.title)) },
+                            onClick = {
+                                onNotesEvent(NotesEvent.OnOrderByChanged(OrderBy.Title))
+                            })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = NotesResources.string.creation_date_recent)) },
+                            onClick = {
+                                onNotesEvent(
+                                    NotesEvent.OnOrderByChanged(
+                                        OrderBy.CreatedAt(
+                                            DateOrderType.RECENT
+                                        )
                                     )
                                 )
-                            )
-                        })
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.creation_date_older)) },
-                        onClick = {
-                            onNotesEvent(
-                                NotesOfBlockNoteEvent.OnOrderByChanged(
-                                    OrderBy.CreatedAt(
-                                        DateOrderType.OLDER
+                            })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = NotesResources.string.creation_date_older)) },
+                            onClick = {
+                                onNotesEvent(
+                                    NotesEvent.OnOrderByChanged(
+                                        OrderBy.CreatedAt(
+                                            DateOrderType.OLDER
+                                        )
                                     )
                                 )
-                            )
-                        })
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_recent)) },
-                        onClick = {
-                            onNotesEvent(
-                                NotesOfBlockNoteEvent.OnOrderByChanged(
-                                    OrderBy.UpdatedAt(
-                                        DateOrderType.RECENT
+                            })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = NotesResources.string.updated_date_recent)) },
+                            onClick = {
+                                onNotesEvent(
+                                    NotesEvent.OnOrderByChanged(
+                                        OrderBy.UpdatedAt(
+                                            DateOrderType.RECENT
+                                        )
                                     )
                                 )
-                            )
-                        })
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(id = NotesResources.string.updated_date_older)) },
-                        onClick = {
-                            onNotesEvent(
-                                NotesOfBlockNoteEvent.OnOrderByChanged(
-                                    OrderBy.UpdatedAt(
-                                        DateOrderType.OLDER
+                            })
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(id = NotesResources.string.updated_date_older)) },
+                            onClick = {
+                                onNotesEvent(
+                                    NotesEvent.OnOrderByChanged(
+                                        OrderBy.UpdatedAt(
+                                            DateOrderType.OLDER
+                                        )
                                     )
                                 )
-                            )
-                        })
-                }
+                            })
+                    }
 
+                }
             }
             NotesList(
                 notes = state.notes,
+                parentBlockNote = state.blockNote,
                 visualizationType = state.visualizationType,
                 onNoteClicked = { id, blockNoteId ->
-                    onNotesEvent(NotesOfBlockNoteEvent.OnNoteClicked(id, blockNoteId))
+                    onNotesEvent(NotesEvent.OnNoteClicked(id, blockNoteId))
                 },
                 onNoteLongClicked = {
                     onNotesEvent(
-                        NotesOfBlockNoteEvent.MultiSelectionStateChanged(
+                        NotesEvent.MultiSelectionStateChanged(
                             active = true,
                             id = it
                         )
@@ -250,7 +255,7 @@ fun NotesOfBlockNoteScreen(
                 isMultiSelectionActive = state.isMultiSelectionActive,
                 onSelectionChanged = { id, selected ->
                     onNotesEvent(
-                        NotesOfBlockNoteEvent.OnSelectionChanged(
+                        NotesEvent.OnSelectionChanged(
                             id,
                             selected
                         )
@@ -264,12 +269,12 @@ fun NotesOfBlockNoteScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ComposeMainScreenState(
-    state: NotesOfBlockNoteState,
+    state: NotesState,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
-    onNotesEvent: (NotesOfBlockNoteEvent) -> Unit,
+    onNotesEvent: (NotesEvent) -> Unit,
 ) {
-    val appBarTitle = if (state.blockNote == null)
+    val appBarTitle = if (state.blockNote?.id == null)
         stringResource(id = R.string.app_name)
     else
         state.blockNote.name
@@ -287,18 +292,18 @@ private fun ComposeMainScreenState(
                     if (!state.isMultiSelectionActive) {
                         IconButton(onClick = {
                             onNotesEvent(
-                                NotesOfBlockNoteEvent.OnAddNewNoteClicked(state.blockNote?.id ?: 0)
+                                NotesEvent.OnAddNewNoteClicked(state.blockNote?.id ?: 0)
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.AutoMirrored.Filled.NoteAdd,
                                 contentDescription = stringResource(id = it.thefedex87.notes_presentation.R.string.remove_notes)
                             )
                         }
                     } else {
                         IconButton(onClick = {
                             onNotesEvent(
-                                NotesOfBlockNoteEvent.OnMoveNotesRequested
+                                NotesEvent.OnMoveNotesRequested
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
@@ -309,7 +314,7 @@ private fun ComposeMainScreenState(
 
                         IconButton(onClick = {
                             onNotesEvent(
-                                NotesOfBlockNoteEvent.OnRemoveSelectedNotesClicked
+                                NotesEvent.OnRemoveSelectedNotesClicked
                             )
                         }, modifier = Modifier.size(48.dp)) {
                             Icon(
@@ -322,7 +327,7 @@ private fun ComposeMainScreenState(
                         VisualizationType.Grid -> {
                             IconButton(onClick = {
                                 onNotesEvent(
-                                    NotesOfBlockNoteEvent.OnVisualizationTypeChanged(
+                                    NotesEvent.OnVisualizationTypeChanged(
                                         VisualizationType.List
                                     )
                                 )
@@ -337,7 +342,7 @@ private fun ComposeMainScreenState(
                         VisualizationType.List -> {
                             IconButton(onClick = {
                                 onNotesEvent(
-                                    NotesOfBlockNoteEvent.OnVisualizationTypeChanged(
+                                    NotesEvent.OnVisualizationTypeChanged(
                                         VisualizationType.Grid
                                     )
                                 )

@@ -2,6 +2,8 @@ package it.thefedex87.notes_presentation.block_note
 
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,13 +18,18 @@ import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import it.thefedex87.core.R
 import it.thefedex87.core.domain.model.VisualizationType
@@ -36,13 +43,15 @@ import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBl
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteGridTile
 import it.thefedex87.notes_presentation.block_note.components.BlockNoteListTile
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import it.thefedex87.notes_presentation.R as NotesPresentationR
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun BlockNotesView(
+fun BlockNotesScreen(
     state: BlockNotesState,
     // blockNotes: ImmutableList<BlockNoteDomainModel>,
     // query: String,
@@ -103,71 +112,86 @@ fun BlockNotesView(
         )
     }
 
-    if (state.visualizationType == VisualizationType.Grid) {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 150.dp),
-            modifier = modifier.fillMaxSize(),
-        ) {
-            items(
-                state.blockNotes,
-                key = {
-                    it.id
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = it.thefedex87.notes_presentation.R.drawable.notebook),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(0.7f),
+            colorFilter = ColorFilter.tint(
+                color = MaterialTheme.colorScheme.onBackground
+            ),
+            alpha = 0.05f
+        )
+
+        if (state.visualizationType == VisualizationType.Grid) {
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 150.dp),
+                modifier = modifier.fillMaxSize(),
+            ) {
+                items(
+                    state.blockNotes,
+                    key = {
+                        it.id
+                    }
+                ) { blockNote ->
+                    BlockNoteGridTile(
+                        id = blockNote.id,
+                        name = blockNote.name,
+                        color = blockNote.color,
+                        onBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
+                        },
+                        onBlockNoteOptionsClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
+                        },
+                        onDismissOptionsRequested = {
+                            onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
+                        },
+                        onEditBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
+                        },
+                        onRemoveBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
+                        },
+                        showOptions = blockNote.showOptions
+                    )
                 }
-            ) { blockNote ->
-                BlockNoteGridTile(
-                    id = blockNote.id,
-                    name = blockNote.name,
-                    color = blockNote.color,
-                    onBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
-                    },
-                    onBlockNoteOptionsClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
-                    },
-                    onDismissOptionsRequested = {
-                        onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
-                    },
-                    onEditBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
-                    },
-                    onRemoveBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
-                    },
-                    showOptions = blockNote.showOptions
-                )
             }
-        }
-    } else if (state.visualizationType == VisualizationType.List) {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-        ) {
-            items(
-                state.blockNotes,
-                key = {
-                    it.id
+        } else if (state.visualizationType == VisualizationType.List) {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+            ) {
+                items(
+                    state.blockNotes,
+                    key = {
+                        it.id
+                    }
+                ) { blockNote ->
+                    BlockNoteListTile(
+                        id = blockNote.id,
+                        name = blockNote.name,
+                        color = blockNote.color,
+                        onBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
+                        },
+                        onBlockNoteOptionsClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
+                        },
+                        onDismissOptionsRequested = {
+                            onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
+                        },
+                        onEditBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
+                        },
+                        onRemoveBlockNoteClicked = {
+                            onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
+                        },
+                        showOptions = blockNote.showOptions
+                    )
                 }
-            ) { blockNote ->
-                BlockNoteListTile(
-                    id = blockNote.id,
-                    name = blockNote.name,
-                    color = blockNote.color,
-                    onBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnBlockNoteClicked(blockNote))
-                    },
-                    onBlockNoteOptionsClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnShowBlockNoteOptionsClicked(it))
-                    },
-                    onDismissOptionsRequested = {
-                        onBlockNotesEvent(BlockNotesEvent.OnDismissBlockNoteOptions)
-                    },
-                    onEditBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnEditBlockNoteClicked(it))
-                    },
-                    onRemoveBlockNoteClicked = {
-                        onBlockNotesEvent(BlockNotesEvent.OnDeleteBlockNoteClicked(it))
-                    },
-                    showOptions = blockNote.showOptions
-                )
             }
         }
     }
@@ -234,4 +258,18 @@ private fun ComposeMainScreenState(
             )
         )
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview
+fun BlockNotesScreenPreview() {
+    BlockNotesScreen(
+        state = BlockNotesState(),
+        uiEvent = emptyFlow(),
+        onBlockNotesEvent = {},
+        onAddBlockNoteEvent = {},
+        onComposed = {},
+        currentMainScreenState = MainScreenState()
+    )
 }
