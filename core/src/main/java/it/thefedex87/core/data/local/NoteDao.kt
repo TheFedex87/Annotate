@@ -13,7 +13,7 @@ interface NoteDao {
     @Query("SELECT * FROM NoteEntity WHERE blockNoteId = :blockNoteId")
     fun getNotesOfBlockNote(blockNoteId: Long): Flow<List<NoteEntity>>
 
-    @Query("SELECT * FROM NoteEntity ORDER BY updatedAt")
+    @Query("SELECT * FROM NoteEntity ORDER BY updatedAt DESC")
     fun getRecentUpdateNotes(): Flow<List<NoteEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

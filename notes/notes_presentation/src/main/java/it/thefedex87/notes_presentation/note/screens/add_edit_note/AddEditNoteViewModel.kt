@@ -60,9 +60,6 @@ class AddEditNoteViewModel @Inject constructor(
         AddEditNoteState()
     )
 
-    private var originalTitle = ""
-    private var originalBody = ""
-
     init {
         _state.value.noteId?.let { noteId ->
             viewModelScope.launch {
@@ -70,17 +67,12 @@ class AddEditNoteViewModel @Inject constructor(
                     repository.blockNotes().first()
                         .firstOrNull { it.id == _state.value.blockNoteId }
                         ?.let { blocknote ->
-                            val note = repository.getNote(noteId, blocknote)
-                            Log.d(Consts.TAG, "Reading note on process death from repo: $note")
-                            when (note) {
+                            when (val note = repository.getNote(noteId, blocknote)) {
                                 is Error -> {
                                     _uiEvents.send(UiEvent.ShowSnackBar(note.asErrorUiText()))
                                 }
 
                                 is Success -> {
-                                    originalBody = note.data.note
-                                    originalTitle = note.data.title
-
                                     _state.update {
                                         it.copy(
                                             createdAt = note.data.createdAt,
@@ -118,28 +110,6 @@ class AddEditNoteViewModel @Inject constructor(
                     }
                     storeNote()
                 }
-
-                /*is AddEditNoteEvent.OnSaveNoteClicked -> {
-                    repository.blockNotes().first()
-                        .firstOrNull { it.id == _state.value.blockNoteId }?.let { blocknote ->
-                            if (_state.value.noteId == null) {
-                                // Adding note
-                                repository.addEditNote(
-                                    NoteDomainModel(
-                                        id = null,
-                                        title = savedStateHandle[NotesConsts.ADD_EDIT_NOTE_TITLE_SAVED_STATE_HANDLE_KEY]
-                                            ?: "",
-                                        body = _state.value.noteState.text.toString(),
-                                        blockNote = blocknote,
-                                        createdAt = _state.value.createdAt,
-                                        updatedAt = LocalDateTime.now()
-                                    )
-                                )
-                            } else {
-                                // Editing note
-                            }
-                        }
-                }*/
             }
         }
     }
@@ -151,7 +121,6 @@ class AddEditNoteViewModel @Inject constructor(
         ) {
             repository.blockNotes().first().firstOrNull { it.id == _state.value.blockNoteId }
                 ?.let { blocknote ->
-                    Log.d(Consts.TAG, "Storing note on process death")
                     val result = repository.addEditNote(
                         NoteDomainModel(
                             id = if (currentId == 0L) null else currentId,

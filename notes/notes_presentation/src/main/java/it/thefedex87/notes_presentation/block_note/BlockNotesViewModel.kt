@@ -152,36 +152,30 @@ class BlockNotesViewModel @Inject constructor(
                                 repository.blockNotes().first().first { it.id == id }.createdAt
                             }
 
-                            try {
-                                var result = repository.addEditBlockNote(
-                                    BlockNoteDomainModel(
-                                        id = id,
-                                        name = name,
-                                        color = color,
-                                        createdAt = createdAt,
-                                        updatedAt = LocalDateTime.now()
-                                    )
+                            val result = repository.addEditBlockNote(
+                                BlockNoteDomainModel(
+                                    id = id,
+                                    name = name,
+                                    color = color,
+                                    createdAt = createdAt,
+                                    updatedAt = LocalDateTime.now()
                                 )
+                            )
 
-                                when(result) {
-                                    is Result.Error -> {
-                                        _uiEvent.send(
-                                            UiEvent.ShowSnackBar(
-                                                result.asErrorUiText()
-                                            )
+                            when(result) {
+                                is Result.Error -> {
+                                    _uiEvent.send(
+                                        UiEvent.ShowSnackBar(
+                                            result.asErrorUiText()
                                         )
-                                    }
-                                    is Result.Success -> {
-                                        savedStateHandle[NotesConsts.ADD_EDIT_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
-                                            AddEditBlockNoteState(
-                                                showDialog = false
-                                            )
-                                    }
+                                    )
                                 }
-
-
-                            } catch (ex: Exception) {
-
+                                is Result.Success -> {
+                                    savedStateHandle[NotesConsts.ADD_EDIT_BLOCK_NOTE_SAVED_STATE_HANDLE_KEY] =
+                                        AddEditBlockNoteState(
+                                            showDialog = false
+                                        )
+                                }
                             }
                         }
                 }
@@ -215,9 +209,7 @@ class BlockNotesViewModel @Inject constructor(
     fun onEvent(event: BlockNotesEvent) {
         viewModelScope.launch {
             when (event) {
-                is BlockNotesEvent.OnBlockNoteClicked -> {
-                    Log.d(Consts.TAG, "Clicked on block note: ${event.blockNote.id}")
-                }
+                is BlockNotesEvent.OnBlockNoteClicked -> Unit
 
                 /*is BlockNotesEvent.OnQueryChanged -> {
                     savedStateHandle[NotesConsts.QUERY_SAVED_STATE_HANDLE_KEY] = event.query

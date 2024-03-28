@@ -28,5 +28,5 @@ interface NotesRepository {
     suspend fun moveNotesToBlockNote(notes: List<Long>, blockNote: Long): Result<Unit, DataError>
     suspend fun updateNotesOrderBy(orderBy: OrderBy)
 
-    fun recentNotes(top: Int = 100): Flow<List<NoteDomainModel>>
+    fun recentNotes(top: Int = 50): Flow<List<NoteDomainModel>>
 }
