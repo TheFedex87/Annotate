@@ -40,3 +40,7 @@ fun DependencyHandler.kaptAndroidTest(dependency: String) {
 fun DependencyHandler.coreLibraryDesugaring(dependency: String) {
     add("coreLibraryDesugaring", dependency)
 }
+
+fun DependencyHandler.testRuntimeOnly(dependency: String) {
+    add("testRuntimeOnly", dependency)
+}
