@@ -1,6 +1,7 @@
 plugins {
     `android-library`
     `kotlin-android`
+    id("de.mannodermaus.android-junit5") version "1.9.3.0"
 }
 
 apply<MainGradlePlugin>()
@@ -26,4 +27,7 @@ dependencies {
     notesDomain()
     notesUtils()
     errorHandling()
+
+    testWithJUnit5()
+    mockito()
 }

@@ -31,7 +31,7 @@ internal class NotesRepositoryImplTest {
     private lateinit var preferencesManager: NotesPreferencesManager
 
     @BeforeEach
-    fun SetUp() = runTest {
+    fun setUp() = runTest {
         blockNoteDao = spy(BlockNoteDao::class.java)
         noteDao = spy(NoteDao::class.java)
         preferencesManager = spy(NotesPreferencesManager::class.java)
