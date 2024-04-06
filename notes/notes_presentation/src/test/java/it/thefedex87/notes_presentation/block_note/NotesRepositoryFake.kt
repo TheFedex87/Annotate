@@ -1,4 +1,4 @@
-package it.thefedex87.notes_presentation.block_note.repository
+package it.thefedex87.notes_presentation.block_note
 
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
@@ -11,9 +11,10 @@ import it.thefedex87.notes_domain.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
-class FakeNotesRepository: NotesRepository {
+class NotesRepositoryFake : NotesRepository {
     private val _notesPreferences = MutableStateFlow(
         NotesPreferences(
             blockNotesVisualizationType = VisualizationType.Grid,
@@ -46,7 +47,27 @@ class FakeNotesRepository: NotesRepository {
     }
 
     override suspend fun addEditBlockNote(blockNote: BlockNoteDomainModel): Result<Long, DataError> {
-        TODO("Not yet implemented")
+        val existingBlockNote = _blockNotes.first().firstOrNull { it.id == blockNote.id }
+
+
+        if (existingBlockNote == null) {
+            val blockNoteWithId = blockNote.copy(
+                id = _blockNotes.value.size.toLong()
+            )
+            val blockNotes = _blockNotes.value + blockNoteWithId
+            _blockNotes.update {
+                blockNotes
+            }
+        } else {
+            val blockNotes = _blockNotes.value.toMutableList()
+            blockNotes.removeIf { it.id == blockNote.id }
+            blockNotes.add(blockNote)
+            _blockNotes.update {
+                blockNotes
+            }
+        }
+
+        return Result.Success(_blockNotes.value.size.toLong())
     }
 
     override suspend fun removeBlockNote(blockNote: BlockNoteDomainModel): Result<Unit, DataError> {
