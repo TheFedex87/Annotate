@@ -12,6 +12,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.notes_presentation.NotesRepositoryFake
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.utils.MainCoroutineExtension
 import kotlinx.coroutines.CoroutineScope

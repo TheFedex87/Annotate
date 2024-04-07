@@ -1,4 +1,4 @@
-package it.thefedex87.notes_presentation.block_note
+package it.thefedex87.notes_presentation
 
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 class NotesRepositoryFake : NotesRepository {
@@ -28,6 +31,13 @@ class NotesRepositoryFake : NotesRepository {
     fun setBlockNotesList(blockNotes: List<BlockNoteDomainModel>) {
         _blockNotes.update {
             blockNotes
+        }
+    }
+
+    private val _recentNotes = MutableStateFlow(listOf<NoteDomainModel>())
+    fun setRecentNotes(notes: List<NoteDomainModel>) {
+        _recentNotes.update {
+            notes
         }
     }
 
@@ -85,12 +95,25 @@ class NotesRepositoryFake : NotesRepository {
     }
 
     override suspend fun updateNotesVisualizationType(visualizationType: VisualizationType) {
-        TODO("Not yet implemented")
+        _notesPreferences.update {
+            it.copy(
+                notesVisualizationType = visualizationType
+            )
+        }
     }
 
-    override fun notes(blockNote: BlockNoteDomainModel): Flow<List<NoteDomainModel>> {
-        TODO("Not yet implemented")
+    fun setNotes(notes: List<NoteDomainModel>) {
+        _notes.update {
+            notes
+        }
     }
+    private val _notes = MutableStateFlow(listOf<NoteDomainModel>())
+    override fun notes(blockNote: BlockNoteDomainModel): Flow<List<NoteDomainModel>> =
+        _notes.asStateFlow().map {
+            it.filter {
+                it.id == blockNote.id
+            }
+        }
 
     override suspend fun getNote(
         id: Long,
@@ -123,10 +146,12 @@ class NotesRepositoryFake : NotesRepository {
     }
 
     override suspend fun updateNotesOrderBy(orderBy: OrderBy) {
-        TODO("Not yet implemented")
+        _notesPreferences.update {
+            it.copy(
+                notesOrderBy = orderBy
+            )
+        }
     }
 
-    override fun recentNotes(top: Int): Flow<List<NoteDomainModel>> {
-        TODO("Not yet implemented")
-    }
+    override fun recentNotes(top: Int): Flow<List<NoteDomainModel>> = _recentNotes.asStateFlow()
 }
