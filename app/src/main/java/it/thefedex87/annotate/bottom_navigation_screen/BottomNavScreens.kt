@@ -2,6 +2,7 @@ package it.thefedex87.annotate.bottom_navigation_screen
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -29,6 +30,13 @@ fun prepareBottomNavBarItems(): List<BottomNavScreenMenuItem> {
             icon = Icons.AutoMirrored.Filled.MenuBook,
             title = UiText.StringResource(
                 R.string.notebooks
+            )
+        ),
+        BottomNavScreenMenuItem(
+            route = Routes.CALENDAR,
+            icon = Icons.Default.CalendarToday,
+            title = UiText.StringResource(
+                R.string.calendar
             )
         )
     )

@@ -10,6 +10,9 @@ object Modules {
     const val notesPresentation = ":notes:notes_presentation"
     const val notesUtils = ":notes:notes_utils"
     const val errorHandling = ":error_handling"
+    const val calendarDomain = ":calendar:calendar_domain"
+    const val calendarData = ":calendar:calendar_data"
+    const val calendarPresentation = ":calendar:calendar_presentation"
 }
 
 fun DependencyHandler.core() {
@@ -38,4 +41,16 @@ fun DependencyHandler.notesUtils() {
 
 fun DependencyHandler.errorHandling() {
     implementation(project(Modules.errorHandling))
+}
+
+fun DependencyHandler.calendarData() {
+    implementation(project(Modules.calendarData))
+}
+
+fun DependencyHandler.calendarDomain() {
+    implementation(project(Modules.calendarDomain))
+}
+
+fun DependencyHandler.calendarPresentation() {
+    implementation(project(Modules.calendarPresentation))
 }

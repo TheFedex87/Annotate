@@ -1,4 +1,4 @@
-package android.util
+package android.util2
 
 object Log {
     fun d(tag: String, msg: String): Int {
@@ -19,5 +19,15 @@ object Log {
     fun e(tag: String, msg: String): Int {
         println("ERROR: $tag: $msg")
         return 0
-    } // add other methods if required...
+    }
+
+    fun a(tag: String, msg: String): Int {
+        println("ASSERT: $tag: $msg")
+        return 0
+    }
+
+    fun v(tag: String, msg: String): Int {
+        println("VERBOSE: $tag: $msg")
+        return 0
+    }
 }

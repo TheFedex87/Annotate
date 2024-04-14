@@ -43,6 +43,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import it.thefedex87.annotate.R
+import it.thefedex87.calendar_presentation.CalendarScreen
+import it.thefedex87.calendar_presentation.CalendarViewModel
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.notes_presentation.block_note.BlockNotesEvent
@@ -174,6 +176,23 @@ fun BottomNavigationScreen(
                 )
             }
             composable(
+                route = Routes.CALENDAR
+            ) {
+                val viewModel = hiltViewModel<CalendarViewModel>()
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                CalendarScreen(
+                    state = state,
+                    calendarEvent = viewModel::onEvent,
+                    onComposed = {
+                        mainScreenState = it.copy(
+                            topBarBackPressed = null
+                        )
+                    },
+                    currentMainScreenState = mainScreenState
+                )
+            }
+            composable(
                 route = "${Routes.NOTES_OF_BLOCK_NOTE}/{blockNoteId}",
                 arguments = listOf(
                     navArgument("blockNoteId") {
@@ -200,7 +219,7 @@ fun BottomNavigationScreen(
                     onNotesEvent = {
                         if (it is NotesEvent.OnAddNewNoteClicked) {
                             navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
-                        } else if(it is NotesEvent.OnNoteClicked) {
+                        } else if (it is NotesEvent.OnNoteClicked) {
                             navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
                         } else {
                             viewModel.onEvent(it)
