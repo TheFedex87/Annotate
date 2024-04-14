@@ -11,6 +11,7 @@ import it.thefedex87.core.domain.model.DateOrderType
 import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_presentation.NotesRepositoryFake
 import it.thefedex87.notes_presentation.block_note.utils.MainCoroutineExtension
 import it.thefedex87.notes_utils.NotesConsts
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.RepeatedTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -44,10 +46,12 @@ internal class NotesViewModelTest {
     fun setUp() {
         notesRepositoryFake = NotesRepositoryFake()
         savedStateHandle = SavedStateHandle()
+        val logger = Mockito.mock(Logger::class.java)
 
         viewModel = NotesViewModel(
             notesRepositoryFake,
-            savedStateHandle
+            savedStateHandle,
+            logger
         )
 
         collectJob = CoroutineScope(Dispatchers.Main).launch {
@@ -118,7 +122,8 @@ internal class NotesViewModelTest {
         )
         viewModel = NotesViewModel(
             notesRepositoryFake,
-            savedStateHandle
+            savedStateHandle,
+            Mockito.mock(Logger::class.java)
         )
         val collectJob = CoroutineScope(Dispatchers.Main).launch {
             viewModel.state.collect()

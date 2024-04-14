@@ -12,6 +12,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_presentation.NotesRepositoryFake
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.utils.MainCoroutineExtension
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.Mockito
 import java.time.LocalDateTime
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,10 +42,12 @@ internal class BlockNotesViewModelTest {
     @BeforeEach
     fun setUp() {
         notesRepositoryFake = NotesRepositoryFake()
+        val logger = Mockito.mock(Logger::class.java)
 
         viewModel = BlockNotesViewModel(
             notesRepositoryFake,
-            SavedStateHandle()
+            SavedStateHandle(),
+            logger
         )
 
         collectJob = CoroutineScope(Dispatchers.Main).launch {

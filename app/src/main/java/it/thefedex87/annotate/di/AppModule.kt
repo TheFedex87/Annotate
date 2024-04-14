@@ -12,6 +12,8 @@ import it.thefedex87.core.data.local.AnnotateDatabase
 import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.utils.Consts
+import it.thefedex87.logging.data.Logger
+import it.thefedex87.logging.domain.LoggerLog
 import it.thefedex87.notes_data.preferences.DefaultNotesPreferencesManager
 import it.thefedex87.notes_data.repository.NotesRepositoryImpl
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
@@ -50,11 +52,18 @@ object AppModule {
     fun provideNotesRepository(
         blockNoteDao: BlockNoteDao,
         noteDao: NoteDao,
-        notesPreferencesManager: NotesPreferencesManager
+        notesPreferencesManager: NotesPreferencesManager,
+        logger: Logger
     ): NotesRepository =
         NotesRepositoryImpl(
             blockNoteDao = blockNoteDao,
             noteDao = noteDao,
-            notesPreferencesManager = notesPreferencesManager
+            notesPreferencesManager = notesPreferencesManager,
+            logger = logger
         )
+
+    @Singleton
+    @Provides
+    fun provideLogger(): Logger =
+        LoggerLog()
 }

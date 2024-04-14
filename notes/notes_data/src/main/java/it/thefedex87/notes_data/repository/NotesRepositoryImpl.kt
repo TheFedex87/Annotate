@@ -19,12 +19,14 @@ import it.thefedex87.notes_domain.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import it.thefedex87.error_handling.Result
+import it.thefedex87.logging.data.Logger
 import kotlinx.coroutines.flow.first
 
 class NotesRepositoryImpl(
     val blockNoteDao: BlockNoteDao,
     val noteDao: NoteDao,
-    val notesPreferencesManager: NotesPreferencesManager
+    val notesPreferencesManager: NotesPreferencesManager,
+    val logger: Logger
 ) : NotesRepository {
     override val notesPreferences: Flow<NotesPreferences>
         get() = notesPreferencesManager.preferencesFlow()
@@ -58,7 +60,7 @@ class NotesRepositoryImpl(
             }
             Result.Success(id)
         } catch (ex: Exception) {
-            Log.d(Consts.TAG, "Error on saving BlockNote")
+            logger.d(Consts.TAG, "Error on saving BlockNote")
             Result.Error(DataError.Local.SAVE_INTO_DB_ERROR)
         }
     }
@@ -68,7 +70,7 @@ class NotesRepositoryImpl(
             blockNoteDao.removeBlockNote(blockNote.toBlockNoteEntity())
             Result.Success(Unit)
         } catch (ex: Exception) {
-            Log.d(Consts.TAG, "Error removing BlockNote")
+            logger.d(Consts.TAG, "Error removing BlockNote")
             Result.Error(DataError.Local.REMOVE_FROM_DB_ERROR)
         }
     }
@@ -104,7 +106,7 @@ class NotesRepositoryImpl(
             }
             Result.Success(Unit)
         } catch (ex: Exception) {
-            Log.d(Consts.TAG, "Error removing note")
+            logger.d(Consts.TAG, "Error removing note")
             Result.Error(DataError.Local.REMOVE_FROM_DB_ERROR)
         }
     }
@@ -124,7 +126,7 @@ class NotesRepositoryImpl(
             }
             Result.Success(id)
         } catch (ex: Exception) {
-            Log.d(Consts.TAG, "Error on saving Note")
+            logger.d(Consts.TAG, "Error on saving Note")
             Result.Error(DataError.Local.SAVE_INTO_DB_ERROR)
         }
     }
@@ -146,7 +148,7 @@ class NotesRepositoryImpl(
             noteDao.removeNote(id)
             Result.Success(Unit)
         } catch (ex: Exception) {
-            Log.d(Consts.TAG, "Error on removing Note")
+            logger.d(Consts.TAG, "Error on removing Note")
             Result.Error(DataError.Local.REMOVE_FROM_DB_ERROR)
         }
     }

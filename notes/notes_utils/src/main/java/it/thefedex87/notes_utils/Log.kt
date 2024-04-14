@@ -1,6 +1,8 @@
 package android.util2
 
+@Deprecated("Used logger instance injected in the classes where logging is needed. This allows to create fake logger for tests")
 object Log {
+    
     fun d(tag: String, msg: String): Int {
         println("DEBUG: $tag: $msg")
         return 0

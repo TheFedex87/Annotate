@@ -13,6 +13,7 @@ object Modules {
     const val calendarDomain = ":calendar:calendar_domain"
     const val calendarData = ":calendar:calendar_data"
     const val calendarPresentation = ":calendar:calendar_presentation"
+    const val logging = ":logging"
 }
 
 fun DependencyHandler.core() {
@@ -53,4 +54,8 @@ fun DependencyHandler.calendarDomain() {
 
 fun DependencyHandler.calendarPresentation() {
     implementation(project(Modules.calendarPresentation))
+}
+
+fun DependencyHandler.logging() {
+    implementation(project(Modules.logging))
 }

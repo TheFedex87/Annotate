@@ -33,6 +33,7 @@ dependencies {
     notesPresentation()
     notesDomain() // For DI purpose
     notesData() // For DI purpose
+    logging()
 
     calendarPresentation()
 }

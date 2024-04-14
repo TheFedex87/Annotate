@@ -13,6 +13,7 @@ import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core.utils.Quintuple
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.error_handling.Result
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel
 import it.thefedex87.notes_presentation.note.model.toNoteUiModel
@@ -41,7 +42,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NotesViewModel @Inject constructor(
     private val repository: NotesRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val logger: Logger
 ) : ViewModel() {
     // This ViewModel is used for 2 different screen: note of a specific block note and
     // the screen of recent notes
@@ -132,7 +134,7 @@ class NotesViewModel @Inject constructor(
         // uses always this viewmodel the blockNoteId is not passed since we are not referring
         // the notes of a specific blocknote
         val id = savedStateHandle.get<Long>(NotesConsts.BLOCK_NOTE_ID)
-        Log.d(Consts.TAG, "New NotesOfBlockNoteViewModel block note id is: $id")
+        logger.d(Consts.TAG, "New NotesOfBlockNoteViewModel block note id is: $id")
         viewModelScope.launch {
             val blockNote = repository.blockNotes().first().firstOrNull {
                 it.id == id

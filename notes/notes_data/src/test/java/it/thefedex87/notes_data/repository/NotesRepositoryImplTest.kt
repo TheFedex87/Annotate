@@ -7,6 +7,7 @@ import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core.domain.model.VisualizationType
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_data.repository.MockitoHelper.anyObject
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import kotlinx.coroutines.test.runTest
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito
 import org.mockito.Mockito.anyLong
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.spy
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
@@ -35,6 +37,7 @@ internal class NotesRepositoryImplTest {
         blockNoteDao = spy(BlockNoteDao::class.java)
         noteDao = spy(NoteDao::class.java)
         preferencesManager = spy(NotesPreferencesManager::class.java)
+        val logger = mock(Logger::class.java)
 
         `when`(blockNoteDao.insertBlockNote(anyObject())).thenReturn(1)
         `when`(noteDao.insertNote(anyObject())).thenReturn(1)
@@ -42,7 +45,8 @@ internal class NotesRepositoryImplTest {
         notesRepository = NotesRepositoryImpl(
             blockNoteDao,
             noteDao,
-            preferencesManager
+            preferencesManager,
+            logger
         )
     }
 

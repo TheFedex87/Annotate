@@ -13,6 +13,7 @@ import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.utils.UiText
 import it.thefedex87.error_handling.Result
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_domain.repository.NotesRepository
 import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
@@ -38,7 +39,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BlockNotesViewModel @Inject constructor(
     private val repository: NotesRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val logger: Logger
 ) : ViewModel() {
     /*val query
         get() = _query.stateIn(
@@ -122,7 +124,7 @@ class BlockNotesViewModel @Inject constructor(
         query as String
         Pair(blockNotes, query)
     }.mapLatest { (blockNotes, query) ->
-        Log.d(
+        logger.d(
             Consts.TAG,
             "Received list of block notes: ${blockNotes.map { it.id }} with hash ${blockNotes.hashCode()} and query: ${_query.value}"
         )
@@ -145,7 +147,7 @@ class BlockNotesViewModel @Inject constructor(
                             val color = addEditBlockNoteState.selectedColor
                             val id = addEditBlockNoteState.id
 
-                            Log.d(Consts.TAG, "Adding/edit a new block note: $name")
+                            logger.d(Consts.TAG, "Adding/edit a new block note: $name")
 
                             val createdAt = if (id == null) {
                                 LocalDateTime.now()
@@ -286,7 +288,7 @@ class BlockNotesViewModel @Inject constructor(
                             repository.blockNotes().first().firstOrNull {
                                 it.id == id
                             }?.let { blockNote ->
-                                Log.d(Consts.TAG, "Delete block note: ${blockNote.name}")
+                                logger.d(Consts.TAG, "Delete block note: ${blockNote.name}")
 
                                 val result = repository.removeBlockNote(
                                     blockNote

@@ -27,6 +27,7 @@ dependencies {
     notesDomain()
     notesUtils()
     errorHandling()
+    logging()
 
     testWithJUnit5()
     mockito()

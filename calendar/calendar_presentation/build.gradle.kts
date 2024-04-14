@@ -26,6 +26,7 @@ dependencies {
     core()
     calendarDomain()
     errorHandling()
+    logging()
 
     testWithJUnit5()
     mockito()
