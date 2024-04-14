@@ -1,5 +1,6 @@
 package it.thefedex87.notes_presentation.note.components
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.theme.LocalSpacing
 import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.model.BlockNoteUiModel
@@ -75,8 +77,12 @@ fun NoteListTile(
                         text = note.title,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
-                        )
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
+                    Log.d(Consts.TAG, "Color is: ${note.blockNoteUiModel.color}")
                     Icon(
                         painter = painterResource(id = R.drawable.notebook),
                         contentDescription = null,

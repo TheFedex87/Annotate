@@ -300,7 +300,8 @@ class NotesViewModel @Inject constructor(
                         it.copy(
                             moveNotesBlockNotesExpanded = false,
                             showMoveNotesDialog = false,
-                            selectedBlockNoteToMoveNotes = null
+                            selectedBlockNoteToMoveNotes = null,
+                            isMultiSelectionActive = false
                         )
                     }
                 }

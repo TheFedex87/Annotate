@@ -66,7 +66,9 @@ fun NotesList(
                 }
             }
         } else {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
                 items(notes,
                     key = {
                         it.id

@@ -165,7 +165,7 @@ class NotesRepositoryImpl(
         val blockNotes = mutableListOf<BlockNoteDomainModel>()
         return noteDao.getRecentUpdateNotes().map {
             it.map { note ->
-                var blockNote = blockNotes.firstOrNull { it.id == note.id }
+                var blockNote = blockNotes.firstOrNull { it.id == note.blockNoteId }
                 if(blockNote == null) {
                     blockNote = blockNotes().first().first { it.id == note.blockNoteId }
                     blockNotes.add(blockNote)
