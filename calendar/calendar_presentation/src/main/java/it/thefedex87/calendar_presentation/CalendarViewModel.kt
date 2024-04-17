@@ -17,7 +17,6 @@ class CalendarViewModel @Inject constructor(): ViewModel() {
     val state = _state.asStateFlow()
 
     init {
-        val now = LocalDate.now()
         composeMonth(YearMonth.now())
     }
 
@@ -42,7 +41,9 @@ class CalendarViewModel @Inject constructor(): ViewModel() {
         _state.update {
             it.copy(
                 days = days,
-                currentMonth = month
+                currentYear = month.year,
+                currentMonth = month,
+                currentView = ViewType.MONTH
             )
         }
     }
@@ -50,24 +51,46 @@ class CalendarViewModel @Inject constructor(): ViewModel() {
     fun onEvent(event: CalendarEvent) {
         viewModelScope.launch {
             when(event) {
-                is CalendarEvent.OnPrevMonthClicked -> {
-                    composeMonth(_state.value.currentMonth.minusMonths(1))
+                is CalendarEvent.OnPrevClicked -> {
+                    when(_state.value.currentView) {
+                        ViewType.MONTH -> {
+                            composeMonth(_state.value.currentMonth!!.minusMonths(1))
+                        }
+                        ViewType.YEAR -> {
+                            _state.update {
+                                it.copy(
+                                    currentYear = _state.value.currentYear - 1
+                                )
+                            }
+                        }
+                    }
                 }
-                is CalendarEvent.OnNextMonthClicked -> {
-                    composeMonth(_state.value.currentMonth.plusMonths(1))
+                is CalendarEvent.OnNextClicked -> {
+                    when(_state.value.currentView) {
+                        ViewType.MONTH -> {
+                            composeMonth(_state.value.currentMonth!!.plusMonths(1))
+                        }
+                        ViewType.YEAR -> {
+                            _state.update {
+                                it.copy(
+                                    currentYear = _state.value.currentYear + 1
+                                )
+                            }
+                        }
+                    }
                 }
                 is CalendarEvent.OnSelectedDayChanged -> {
-                    if(event.day.year != _state.value.currentMonth.year) {
-                        if(event.day.year < _state.value.currentMonth.year) {
-                            composeMonth(_state.value.currentMonth.minusMonths(1))
+                    if(event.day.year != _state.value.currentMonth!!.year) {
+                        if(event.day.year < _state.value.currentMonth!!.year) {
+                            composeMonth(_state.value.currentMonth!!.minusMonths(1))
                         } else {
-                            composeMonth(_state.value.currentMonth.plusMonths(1))
+                            composeMonth(_state.value.currentMonth!!.plusMonths(1))
                         }
-                    } else if (event.day.month != _state.value.currentMonth.month) {
-                        if (event.day.month < _state.value.currentMonth.month || (event.day.month.value == 12 && _state.value.currentMonth.month.value == 1)) {
-                            composeMonth(_state.value.currentMonth.minusMonths(1))
-                        } else if(event.day.month > _state.value.currentMonth.month || (event.day.month.value == 1 && _state.value.currentMonth.month.value == 12)) {
-                            composeMonth(_state.value.currentMonth.plusMonths(1))
+                    } else if (event.day.month != _state.value.currentMonth!!.month) {
+                        if (event.day.month < _state.value.currentMonth!!.month || (event.day.month.value == 12 && _state.value.currentMonth!!.month.value == 1)) {
+                            composeMonth(_state.value.currentMonth!!.minusMonths(1))
+                        } else if(event.day.month > _state.value.currentMonth!!.month || (event.day.month.value == 1 && _state.value.currentMonth!!.month.value == 12)) {
+                            composeMonth(_state.value.currentMonth!!.plusMonths(1))
                         }
                     }
                     _state.update {
@@ -75,6 +98,19 @@ class CalendarViewModel @Inject constructor(): ViewModel() {
                             selectedDay = event.day
                         )
                     }
+                }
+                is CalendarEvent.OnYearClicked -> {
+                    _state.update {
+                        it.copy(
+                            currentView = ViewType.YEAR,
+                            currentMonth = null
+                        )
+                    }
+                }
+                is CalendarEvent.OnMonthClicked -> {
+                    composeMonth(
+                        event.month
+                    )
                 }
             }
         }
