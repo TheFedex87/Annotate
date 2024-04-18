@@ -1,6 +1,7 @@
 package it.thefedex87.notes_presentation.note.screens.add_edit_note
 
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.core_ui.MainScreenState
 import it.thefedex87.core_ui.events.UiEvent
@@ -64,6 +66,7 @@ fun AddEditNoteScreen(
     createdAt: LocalDateTime,
     currentMainScreenState: MainScreenState,
     onComposed: (MainScreenState) -> Unit,
+    navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -77,6 +80,9 @@ fun AddEditNoteScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
+                is UiEvent.PopBackStack -> {
+                    navHostController.popBackStack()
+                }
 
                 else -> Unit
             }
@@ -88,9 +94,16 @@ fun AddEditNoteScreen(
             currentMainScreenState.copy(
                 bottomBarVisible = false,
                 topBarTitle = parentBlockNoteName,
-                topBarActions = null
+                topBarActions = null,
+                topBarBackPressed = {
+                    onAddEditNoteEvent(AddEditNoteEvent.OnBackPressed)
+                }
             )
         )
+    }
+
+    BackHandler {
+        onAddEditNoteEvent(AddEditNoteEvent.OnBackPressed)
     }
 
     val createdAtStr = remember(createdAt) {
@@ -223,6 +236,7 @@ fun AddEditNoteScreenPreview() {
         note = "",
         createdAt = LocalDateTime.now(),
         currentMainScreenState = MainScreenState(),
+        navHostController = NavHostController(LocalContext.current),
         onComposed = {}
     )
 }

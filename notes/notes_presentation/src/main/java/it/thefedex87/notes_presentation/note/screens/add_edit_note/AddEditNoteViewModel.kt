@@ -110,6 +110,27 @@ class AddEditNoteViewModel @Inject constructor(
                     }
                     storeNote()
                 }
+
+                is AddEditNoteEvent.OnBackPressed -> {
+                    val noteId = savedStateHandle.get<Long>(NotesConsts.NOTE_ID)
+                    if (noteId != null && _state.value.note.isEmpty() && _state.value.title.isEmpty()) {
+                        when (val result = repository.removeNote(noteId)) {
+                            is Error -> {
+                                _uiEvents.send(
+                                    UiEvent.ShowSnackBar(
+                                        result.asErrorUiText()
+                                    )
+                                )
+                            }
+
+                            is Success -> {
+                                _uiEvents.send(UiEvent.PopBackStack())
+                            }
+                        }
+                    } else {
+                        _uiEvents.send(UiEvent.PopBackStack())
+                    }
+                }
             }
         }
     }
@@ -144,10 +165,9 @@ class AddEditNoteViewModel @Inject constructor(
                             savedStateHandle[NotesConsts.NOTE_ID] = result.data
                         }
                     }
-
                 }
         } else {
-            currentId?.let {
+            /*currentId?.let {
                 if (it > 0) {
                     when (val result = repository.removeNote(it)) {
                         is Error -> {
@@ -162,7 +182,7 @@ class AddEditNoteViewModel @Inject constructor(
                     }
                 }
             }
-            savedStateHandle.remove<Long>(NotesConsts.NOTE_ID)
+            savedStateHandle.remove<Long>(NotesConsts.NOTE_ID)*/
         }
     }
 }

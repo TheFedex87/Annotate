@@ -251,12 +251,9 @@ fun BottomNavigationScreen(
                     uiEvent = viewModel.uiEvent,
                     createdAt = state.createdAt,
                     currentMainScreenState = mainScreenState,
+                    navHostController = navController,
                     onComposed = {
-                        mainScreenState = it.copy(
-                            topBarBackPressed = {
-                                navController.popBackStack()
-                            }
-                        )
+                        mainScreenState = it.copy()
                     }
                 )
             }
