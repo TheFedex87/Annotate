@@ -14,6 +14,9 @@ object Modules {
     const val calendarData = ":calendar:calendar_data"
     const val calendarPresentation = ":calendar:calendar_presentation"
     const val logging = ":logging"
+    const val alarmsDomain = ":alarms:alarms_domain"
+    const val alarmsData = ":alarms:alarms_data"
+    const val alarmsPresentation = ":alarms:alarms_presentation"
 }
 
 fun DependencyHandler.core() {
@@ -58,4 +61,16 @@ fun DependencyHandler.calendarPresentation() {
 
 fun DependencyHandler.logging() {
     implementation(project(Modules.logging))
+}
+
+fun DependencyHandler.alarmsDomain() {
+    implementation(project(Modules.alarmsDomain))
+}
+
+fun DependencyHandler.alarmsData() {
+    implementation(project(Modules.alarmsData))
+}
+
+fun DependencyHandler.alarmsPresentation() {
+    implementation(project(Modules.alarmsPresentation))
 }

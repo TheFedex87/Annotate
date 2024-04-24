@@ -16,4 +16,5 @@ import it.thefedex87.core.data.local.entity.NoteEntity
 abstract class AnnotateDatabase: RoomDatabase() {
     abstract val blockNoteDao: BlockNoteDao
     abstract val noteDao: NoteDao
+    abstract val alarmDao: AlarmDao
 }

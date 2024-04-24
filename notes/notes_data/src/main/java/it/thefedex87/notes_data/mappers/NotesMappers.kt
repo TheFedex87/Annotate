@@ -13,6 +13,7 @@ fun NoteDomainModel.toNoteEntity(): NoteEntity =
         body = note,
         createdAt = createdAt.toEpochSecond(ZoneOffset.UTC),
         updatedAt = updatedAt.toEpochSecond(ZoneOffset.UTC),
+        alarmTime = alarmTime?.toEpochSecond(ZoneOffset.UTC),
         blockNoteId = blockNote.id!!
     )
 
@@ -23,5 +24,11 @@ fun NoteEntity.toNoteDomainModel(blockNote: BlockNoteDomainModel): NoteDomainMod
         note = body,
         createdAt = LocalDateTime.ofEpochSecond(createdAt, 0, ZoneOffset.UTC),
         updatedAt = LocalDateTime.ofEpochSecond(updatedAt, 0, ZoneOffset.UTC),
+        alarmTime = if (alarmTime != null) LocalDateTime.ofEpochSecond(
+            alarmTime!!,
+            0,
+            ZoneOffset.UTC
+        )
+        else null,
         blockNote = blockNote
     )

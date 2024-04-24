@@ -25,4 +25,6 @@
     <string name="remove_notes">Remove Selected Notes</string>
     <string name="remove_notes_confirm_body">Do you really want to remove the selected notes?</string>
     <string name="move_notes">Move Notes to Another Block Note</string>
+    <string name="alarm">Alarm</string>
+    <string name="no_alarm_past">Cannot set alarm in the past, please select a future date time</string>
 </resources>

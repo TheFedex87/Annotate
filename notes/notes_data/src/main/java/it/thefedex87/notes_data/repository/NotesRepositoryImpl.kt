@@ -1,6 +1,5 @@
 package it.thefedex87.notes_data.repository
 
-import android.util.Log
 import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.NoteDao
 import it.thefedex87.core.domain.model.BlockNoteDomainModel
@@ -9,6 +8,8 @@ import it.thefedex87.core.domain.model.OrderBy
 import it.thefedex87.core.domain.model.VisualizationType
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.error_handling.DataError
+import it.thefedex87.error_handling.Result
+import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_data.mappers.toBlockNoteDomainModel
 import it.thefedex87.notes_data.mappers.toBlockNoteEntity
 import it.thefedex87.notes_data.mappers.toNoteDomainModel
@@ -17,10 +18,8 @@ import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import it.thefedex87.error_handling.Result
-import it.thefedex87.logging.data.Logger
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 class NotesRepositoryImpl(
     val blockNoteDao: BlockNoteDao,

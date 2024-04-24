@@ -19,6 +19,7 @@ data class NoteEntity(
     val body: String,
     val createdAt: Long,
     val updatedAt: Long,
+    val alarmTime: Long?,
 
     val blockNoteId: Long
 )

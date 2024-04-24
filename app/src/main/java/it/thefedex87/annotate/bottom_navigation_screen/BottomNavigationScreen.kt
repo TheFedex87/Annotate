@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -30,7 +31,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewFontScale
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
@@ -42,7 +50,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import it.thefedex87.alarms_presentation.AlarmView
+import it.thefedex87.alarms_presentation.AlarmViewModel
 import it.thefedex87.annotate.R
+import it.thefedex87.annotate.ui.theme.AnnotateTheme
 import it.thefedex87.calendar_presentation.CalendarScreen
 import it.thefedex87.calendar_presentation.CalendarViewModel
 import it.thefedex87.core.utils.Consts
@@ -55,6 +66,7 @@ import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteVi
 import it.thefedex87.notes_presentation.note.screens.NotesEvent
 import it.thefedex87.notes_presentation.note.screens.NotesScreen
 import it.thefedex87.notes_presentation.note.screens.NotesViewModel
+import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -97,165 +109,178 @@ fun BottomNavigationScreen(
             )
         }
     ) { values ->
-        NavHost(
-            navController = navController,
-            startDestination = Routes.RECENT_NOTES,
-            modifier = modifier.padding(values)
-        ) {
-            composable(route = Routes.RECENT_NOTES) {
-                val viewModel = hiltViewModel<NotesViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                Log.d(Consts.TAG, "Received new state: $state")
+        if (!LocalInspectionMode.current) {
+            NavHost(
+                navController = navController,
+                startDestination = Routes.RECENT_NOTES,
+                modifier = modifier.padding(values)
+            ) {
+                composable(route = Routes.RECENT_NOTES) {
+                    val viewModel = hiltViewModel<NotesViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    Log.d(Consts.TAG, "Received new state: $state")
 
-                NotesScreen(
-                    state = state,
-                    onComposed = {
-                        mainScreenState = it.copy(
-                            topBarBackPressed = null
-                        )
-                    },
-                    uiEvent = viewModel.uiEvent,
-                    snackbarHostState = snackbarHostState,
-                    currentMainScreenState = mainScreenState,
-                    onNotesEvent = {
-                        when (it) {
-                            is NotesEvent.OnAddNewNoteClicked -> {
-                                navController.navigate("${Routes.ADD_EDIT_NOTE}/1")
+                    NotesScreen(
+                        state = state,
+                        onComposed = {
+                            mainScreenState = it.copy(
+                                topBarBackPressed = null
+                            )
+                        },
+                        uiEvent = viewModel.uiEvent,
+                        snackbarHostState = snackbarHostState,
+                        currentMainScreenState = mainScreenState,
+                        onNotesEvent = {
+                            when (it) {
+                                is NotesEvent.OnAddNewNoteClicked -> {
+                                    navController.navigate("${Routes.ADD_EDIT_NOTE}/1")
+                                }
+
+                                is NotesEvent.OnNoteClicked -> {
+                                    navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
+                                }
+
+                                else -> {
+                                    viewModel.onEvent(it)
+                                }
                             }
+                        }
+                    )
 
-                            is NotesEvent.OnNoteClicked -> {
+                }
+                composable(route = Routes.NOTEBOOKS) {
+                    val viewModel = hiltViewModel<BlockNotesViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    /* val blockNotes by viewModel.blockNotes.collectAsStateWithLifecycle()
+                    val query by viewModel.query.collectAsStateWithLifecycle()
+                    Log.d(Consts.TAG, "BLock notes list is: ${blockNotes.hashCode()}")
+                    val blockNoteClickedLambda = remember<(Long) -> Unit> {
+                        { id ->
+                            viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
+                        }
+                    }
+                    val onQueryChangedLambda = remember<(String) -> Unit> {
+                        { query ->
+                            viewModel.onEvent(BlockNotesEvent.OnQueryChanged(query))
+                        }
+                    } */
+
+                    BlockNotesScreen(
+                        // blockNotes = blockNotes,
+                        // query = query,
+                        state = state,
+                        onComposed = {
+                            mainScreenState = it.copy(
+                                topBarBackPressed = null
+                            )
+                        },
+                        currentMainScreenState = mainScreenState,
+                        onBlockNotesEvent = {
+                            if (it is BlockNotesEvent.OnBlockNoteClicked) {
+                                navController.navigate("${Routes.NOTES_OF_BLOCK_NOTE}/${it.blockNote.id}")
+                            } else {
+                                viewModel.onEvent(it)
+                            }
+                        },
+                        onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent,
+                        uiEvent = viewModel.uiEvent,
+                        snackbarHostState = snackbarHostState
+                    )
+                }
+                composable(
+                    route = Routes.CALENDAR
+                ) {
+                    val viewModel = hiltViewModel<CalendarViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+
+                    CalendarScreen(
+                        state = state,
+                        calendarEvent = viewModel::onEvent,
+                        onComposed = {
+                            mainScreenState = it.copy(
+                                topBarBackPressed = null
+                            )
+                        },
+                        currentMainScreenState = mainScreenState
+                    )
+                }
+                composable(
+                    route = "${Routes.NOTES_OF_BLOCK_NOTE}/{blockNoteId}",
+                    arguments = listOf(
+                        navArgument("blockNoteId") {
+                            type = NavType.LongType
+                        }
+                    )
+                ) {
+                    val viewModel = hiltViewModel<NotesViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    Log.d(Consts.TAG, "Received new state: $state")
+
+                    NotesScreen(
+                        state = state,
+                        onComposed = {
+                            mainScreenState = it.copy(
+                                topBarBackPressed = {
+                                    navController.popBackStack()
+                                }
+                            )
+                        },
+                        uiEvent = viewModel.uiEvent,
+                        snackbarHostState = snackbarHostState,
+                        currentMainScreenState = mainScreenState,
+                        onNotesEvent = {
+                            if (it is NotesEvent.OnAddNewNoteClicked) {
+                                navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
+                            } else if (it is NotesEvent.OnNoteClicked) {
                                 navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
-                            }
-
-                            else -> {
+                            } else {
                                 viewModel.onEvent(it)
                             }
                         }
-                    }
-                )
-
-            }
-            composable(route = Routes.NOTEBOOKS) {
-                val viewModel = hiltViewModel<BlockNotesViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                /* val blockNotes by viewModel.blockNotes.collectAsStateWithLifecycle()
-                val query by viewModel.query.collectAsStateWithLifecycle()
-                Log.d(Consts.TAG, "BLock notes list is: ${blockNotes.hashCode()}")
-                val blockNoteClickedLambda = remember<(Long) -> Unit> {
-                    { id ->
-                        viewModel.onEvent(BlockNotesEvent.OnBlockNoteClicked(id))
-                    }
+                    )
                 }
-                val onQueryChangedLambda = remember<(String) -> Unit> {
-                    { query ->
-                        viewModel.onEvent(BlockNotesEvent.OnQueryChanged(query))
-                    }
-                } */
-
-                BlockNotesScreen(
-                    // blockNotes = blockNotes,
-                    // query = query,
-                    state = state,
-                    onComposed = {
-                        mainScreenState = it.copy(
-                            topBarBackPressed = null
-                        )
-                    },
-                    currentMainScreenState = mainScreenState,
-                    onBlockNotesEvent = {
-                        if (it is BlockNotesEvent.OnBlockNoteClicked) {
-                            navController.navigate("${Routes.NOTES_OF_BLOCK_NOTE}/${it.blockNote.id}")
-                        } else {
-                            viewModel.onEvent(it)
+                composable(
+                    route = "${Routes.ADD_EDIT_NOTE}/{blockNoteId}?noteId={noteId}",
+                    arguments = listOf(
+                        navArgument(name = "blockNoteId") {
+                            type = NavType.LongType
+                        },
+                        navArgument(name = "noteId") {
+                            type = NavType.LongType
+                            defaultValue = 0
                         }
-                    },
-                    onAddBlockNoteEvent = viewModel::onAddBlockNoteEvent,
-                    uiEvent = viewModel.uiEvent,
-                    snackbarHostState = snackbarHostState
-                )
-            }
-            composable(
-                route = Routes.CALENDAR
-            ) {
-                val viewModel = hiltViewModel<CalendarViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
+                    )
+                ) {
+                    val viewModel = hiltViewModel<AddEditNoteViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
 
-                CalendarScreen(
-                    state = state,
-                    calendarEvent = viewModel::onEvent,
-                    onComposed = {
-                        mainScreenState = it.copy(
-                            topBarBackPressed = null
-                        )
-                    },
-                    currentMainScreenState = mainScreenState
-                )
-            }
-            composable(
-                route = "${Routes.NOTES_OF_BLOCK_NOTE}/{blockNoteId}",
-                arguments = listOf(
-                    navArgument("blockNoteId") {
-                        type = NavType.LongType
-                    }
-                )
-            ) {
-                val viewModel = hiltViewModel<NotesViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                Log.d(Consts.TAG, "Received new state: $state")
+                    val noteId = it.arguments?.getLong("noteId")
 
-                NotesScreen(
-                    state = state,
-                    onComposed = {
-                        mainScreenState = it.copy(
-                            topBarBackPressed = {
-                                navController.popBackStack()
+                    AddEditNoteScreen(
+                        state = state,
+                        noteId = noteId,
+                        onAddEditNoteEvent = { event ->
+                            when (event) {
+                                is AddEditNoteEvent.OnSetAlarmClicked -> {
+                                    //navController.navigate("${Routes.SET_ALARM}/$noteId")
+                                    viewModel.onEvent(event)
+                                }
+
+                                else -> viewModel.onEvent(event)
                             }
-                        )
-                    },
-                    uiEvent = viewModel.uiEvent,
-                    snackbarHostState = snackbarHostState,
-                    currentMainScreenState = mainScreenState,
-                    onNotesEvent = {
-                        if (it is NotesEvent.OnAddNewNoteClicked) {
-                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}")
-                        } else if (it is NotesEvent.OnNoteClicked) {
-                            navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.id}")
-                        } else {
-                            viewModel.onEvent(it)
+                        },
+                        parentBlockNoteName = state.blockNoteName,
+                        snackbarHostState = snackbarHostState,
+                        uiEvent = viewModel.uiEvent,
+                        createdAt = state.createdAt,
+                        currentMainScreenState = mainScreenState,
+                        navHostController = navController,
+                        onComposed = {
+                            mainScreenState = it.copy()
                         }
-                    }
-                )
-            }
-            composable(
-                route = "${Routes.ADD_EDIT_NOTE}/{blockNoteId}?noteId={noteId}",
-                arguments = listOf(
-                    navArgument(name = "blockNoteId") {
-                        type = NavType.LongType
-                    },
-                    navArgument(name = "noteId") {
-                        type = NavType.LongType
-                        defaultValue = 0
-                    }
-                )
-            ) {
-                val viewModel = hiltViewModel<AddEditNoteViewModel>()
-                val state by viewModel.state.collectAsStateWithLifecycle()
-
-                AddEditNoteScreen(
-                    title = state.title,
-                    note = state.note,
-                    onAddEditNoteEvent = viewModel::onEvent,
-                    parentBlockNoteName = state.blockNoteName,
-                    snackbarHostState = snackbarHostState,
-                    uiEvent = viewModel.uiEvent,
-                    createdAt = state.createdAt,
-                    currentMainScreenState = mainScreenState,
-                    navHostController = navController,
-                    onComposed = {
-                        mainScreenState = it.copy()
-                    }
-                )
+                    )
+                }
             }
         }
     }
@@ -336,7 +361,11 @@ fun RowScope.AddItem(
             )
         },
         label = {
-            Text(text = screen.title.asString(LocalContext.current))
+            Text(
+                text = screen.title.asString(LocalContext.current),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = if(LocalDensity.current.fontScale >= 1.5) 12.sp else 16.sp
+                ))
         },
         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
         onClick = {
@@ -348,4 +377,13 @@ fun RowScope.AddItem(
             }
         }
     )
+}
+
+@Preview
+@PreviewScreenSizes
+@Composable
+fun BottomNavigationScreenPreview() {
+    AnnotateTheme {
+        BottomNavigationScreen(navController = NavHostController(LocalContext.current))
+    }
 }

@@ -8,5 +8,6 @@ data class NoteDomainModel(
     val note: String,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime,
+    val alarmTime: LocalDateTime?,
     val blockNote: BlockNoteDomainModel
 )

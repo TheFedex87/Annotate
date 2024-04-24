@@ -8,6 +8,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import it.thefedex87.alarms_data.AlarmSchedulerImpl
+import it.thefedex87.alarms_data.repository.AlarmRepositoryImpl
+import it.thefedex87.alarms_domain.AlarmScheduler
+import it.thefedex87.alarms_domain.repository.AlarmRepository
+import it.thefedex87.core.data.local.AlarmDao
 import it.thefedex87.core.data.local.AnnotateDatabase
 import it.thefedex87.core.data.local.BlockNoteDao
 import it.thefedex87.core.data.local.NoteDao
@@ -44,6 +49,11 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideAlarmDao(annotateDb: AnnotateDatabase): AlarmDao =
+        annotateDb.alarmDao
+
+    @Singleton
+    @Provides
     fun provideNotesPreferencesManager(@ApplicationContext context: Context): NotesPreferencesManager =
         DefaultNotesPreferencesManager(context)
 
@@ -66,4 +76,18 @@ object AppModule {
     @Provides
     fun provideLogger(): Logger =
         LoggerLog()
+
+    @Singleton
+    @Provides
+    fun provideAlarmScheduler(
+        @ApplicationContext context: Context
+    ):AlarmScheduler {
+        return AlarmSchedulerImpl(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAlarmRepository(alarmDao: AlarmDao): AlarmRepository {
+        return AlarmRepositoryImpl(alarmDao)
+    }
 }

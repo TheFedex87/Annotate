@@ -34,6 +34,8 @@ dependencies {
     notesDomain() // For DI purpose
     notesData() // For DI purpose
     logging()
-
     calendarPresentation()
+    alarmsPresentation()
+    alarmsDomain() // For DI purpose
+    alarmsData() // For DI purpose
 }

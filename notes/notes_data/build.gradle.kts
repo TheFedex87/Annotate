@@ -20,6 +20,7 @@ dependencies {
     core()
     errorHandling()
     logging()
+    alarmsDomain()
 
     testWithJUnit5()
     mockito()

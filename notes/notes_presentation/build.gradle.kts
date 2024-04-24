@@ -28,6 +28,8 @@ dependencies {
     notesUtils()
     errorHandling()
     logging()
+    alarmsPresentation()
+    alarmsDomain()
 
     testWithJUnit5()
     mockito()
