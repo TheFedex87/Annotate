@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="found_block_notes">Found block notes</string>
+    <string name="found_notes">Found notes</string>
+    <string name="search_hint">Search…</string>
+</resources>

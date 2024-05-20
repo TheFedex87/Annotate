@@ -18,4 +18,10 @@ sealed interface AddEditNoteEvent {
     data object OnAlarmDatePickerConfirmed : AddEditNoteEvent
     data object OnAlarmDatePickerCanceled : AddEditNoteEvent
     data class OnAlarmEnabledCheckChanged(val enabled: Boolean) : AddEditNoteEvent
+    data class SubmitNotificationPermissionInfo(
+        val acceptedNotificationPermission: Boolean,
+        val showNotificationPermissionRationale: Boolean
+    ) : AddEditNoteEvent
+
+    data object DismissRationaleDialog: AddEditNoteEvent
 }

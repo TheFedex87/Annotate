@@ -23,6 +23,8 @@ import it.thefedex87.notes_data.preferences.DefaultNotesPreferencesManager
 import it.thefedex87.notes_data.repository.NotesRepositoryImpl
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository
+import it.thefedex87.search.data.SearchRepositoryImpl
+import it.thefedex87.search.domain.SearchRepository
 import javax.inject.Singleton
 
 @Module
@@ -87,7 +89,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideAlarmRepository(alarmDao: AlarmDao): AlarmRepository {
-        return AlarmRepositoryImpl(alarmDao)
+    fun provideAlarmRepository(alarmDao: AlarmDao, alarmScheduler: AlarmScheduler): AlarmRepository {
+        return AlarmRepositoryImpl(alarmDao, alarmScheduler)
+    }
+
+    @Singleton
+    @Provides
+    fun providesSearchRepository(blockNoteDao: BlockNoteDao, notesDao: NoteDao): SearchRepository {
+        return SearchRepositoryImpl(blockNoteDao, notesDao)
     }
 }

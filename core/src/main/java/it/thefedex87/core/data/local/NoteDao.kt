@@ -16,6 +16,9 @@ interface NoteDao {
     @Query("SELECT * FROM NoteEntity ORDER BY updatedAt DESC")
     fun getRecentUpdateNotes(): Flow<List<NoteEntity>>
 
+    @Query("SELECT * FROM NoteEntity WHERE title LIKE '%' || :query || '%' OR body LIKE '%' || :query || '%'")
+    fun filterNote(query: String): Flow<List<NoteEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: NoteEntity): Long
 

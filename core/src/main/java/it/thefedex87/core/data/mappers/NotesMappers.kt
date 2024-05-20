@@ -1,4 +1,4 @@
-package it.thefedex87.notes_data.mappers
+package it.thefedex87.core.data.mappers
 
 import it.thefedex87.core.data.local.entity.NoteEntity
 import it.thefedex87.core.domain.model.BlockNoteDomainModel

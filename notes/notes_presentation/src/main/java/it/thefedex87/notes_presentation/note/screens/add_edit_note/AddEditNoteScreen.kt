@@ -1,9 +1,16 @@
 package it.thefedex87.notes_presentation.note.screens.add_edit_note
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerState
@@ -30,6 +38,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -56,6 +65,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import it.thefedex87.alarms_presentation.AlarmView
 import it.thefedex87.core.utils.Consts
@@ -86,6 +97,24 @@ fun AddEditNoteScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    val permissionLanucher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            val activity = context as ComponentActivity
+            val hasNotificationPermission = granted
+            onAddEditNoteEvent(
+                AddEditNoteEvent.SubmitNotificationPermissionInfo(
+                    showNotificationPermissionRationale = Build.VERSION.SDK_INT >= 33 &&
+                            shouldShowRequestPermissionRationale(
+                                activity,
+                                Manifest.permission.POST_NOTIFICATIONS
+                            ),
+                    acceptedNotificationPermission = hasNotificationPermission
+                )
+            )
+        })
+
     LaunchedEffect(key1 = true) {
         uiEvent.onEach {
             Log.d(Consts.TAG, "Received new ui event in BlockNotesView: $it")
@@ -104,6 +133,31 @@ fun AddEditNoteScreen(
                 else -> Unit
             }
         }.launchIn(this)
+
+
+        val activity = context as ComponentActivity
+        val showNotificationRationale = Build.VERSION.SDK_INT >= 33 &&
+                shouldShowRequestPermissionRationale(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+        onAddEditNoteEvent(
+            AddEditNoteEvent.SubmitNotificationPermissionInfo(
+                showNotificationPermissionRationale = Build.VERSION.SDK_INT >= 33 &&
+                        shouldShowRequestPermissionRationale(
+                            activity,
+                            Manifest.permission.POST_NOTIFICATIONS
+                        ),
+                acceptedNotificationPermission = Build.VERSION.SDK_INT >= 33 || ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            )
+        )
+
+        if (!showNotificationRationale) {
+            permissionLanucher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     LaunchedEffect(key1 = parentBlockNoteName, key2 = state.canEnableAlarm) {
@@ -318,7 +372,7 @@ fun AddEditNoteScreen(
                 }
             }
         }
-    } else if(state.showDatePicker) {
+    } else if (state.showDatePicker) {
         val datePickerState = rememberDatePickerState(
             initialSelectedDateMillis = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000,
             initialDisplayedMonthMillis = null,
@@ -355,6 +409,42 @@ fun AddEditNoteScreen(
                         onAddEditNoteEvent(AddEditNoteEvent.OnAlarmDatePickerCanceled)
                     }) {
                         Text(text = stringResource(id = it.thefedex87.core_ui.R.string.cancel))
+                    }
+                }
+            }
+        }
+    }
+
+    if (state.showNotificationRationale) {
+        AlertDialog(onDismissRequest = { }) {
+            Card {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.notification_permissions),
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = stringResource(id = R.string.notification_permission_rationale),
+                        modifier = Modifier.padding(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Divider()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .clickable {
+                                onAddEditNoteEvent(AddEditNoteEvent.DismissRationaleDialog)
+                                permissionLanucher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = stringResource(id = R.string.okay))
                     }
                 }
             }

@@ -10,6 +10,7 @@ import it.thefedex87.alarms_domain.model.AlarmDomainModel
 import it.thefedex87.core.domain.model.NoteDomainModel
 import it.thefedex87.core_ui.events.UiEvent
 import it.thefedex87.core_ui.utils.UiText
+import it.thefedex87.core_ui.utils.asErrorUiText
 import it.thefedex87.error_handling.Result.Error
 import it.thefedex87.error_handling.Result.Success
 import it.thefedex87.notes_domain.repository.NotesRepository
@@ -24,7 +25,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import javax.inject.Inject
-import it.thefedex87.notes_presentation.note.screens.asErrorUiText
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -314,6 +314,18 @@ class AddEditNoteViewModel @Inject constructor(
                 is AddEditNoteEvent.OnSetAlarmDismissed -> {
                     _state.update {
                         it.copy(showAlarmDialog = false)
+                    }
+                }
+
+                is AddEditNoteEvent.SubmitNotificationPermissionInfo -> {
+                    _state.update {
+                        it.copy(showNotificationRationale = event.showNotificationPermissionRationale)
+                    }
+                }
+
+                is AddEditNoteEvent.DismissRationaleDialog -> {
+                    _state.update {
+                        it.copy(showNotificationRationale = false)
                     }
                 }
             }

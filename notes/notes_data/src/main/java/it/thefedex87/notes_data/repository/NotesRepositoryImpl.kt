@@ -10,10 +10,10 @@ import it.thefedex87.core.utils.Consts
 import it.thefedex87.error_handling.DataError
 import it.thefedex87.error_handling.Result
 import it.thefedex87.logging.data.Logger
-import it.thefedex87.notes_data.mappers.toBlockNoteDomainModel
-import it.thefedex87.notes_data.mappers.toBlockNoteEntity
-import it.thefedex87.notes_data.mappers.toNoteDomainModel
-import it.thefedex87.notes_data.mappers.toNoteEntity
+import it.thefedex87.core.data.mappers.toBlockNoteDomainModel
+import it.thefedex87.core.data.mappers.toBlockNoteEntity
+import it.thefedex87.core.data.mappers.toNoteDomainModel
+import it.thefedex87.core.data.mappers.toNoteEntity
 import it.thefedex87.notes_domain.model.NotesPreferences
 import it.thefedex87.notes_domain.preferences.NotesPreferencesManager
 import it.thefedex87.notes_domain.repository.NotesRepository

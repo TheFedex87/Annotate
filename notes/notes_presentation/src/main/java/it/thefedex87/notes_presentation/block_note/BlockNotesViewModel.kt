@@ -1,7 +1,6 @@
 package it.thefedex87.notes_presentation.block_note
 
 
-import android.util.Log
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -11,11 +10,10 @@ import it.thefedex87.core.domain.model.BlockNoteDomainModel
 import it.thefedex87.core.utils.Consts
 import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core_ui.events.UiEvent
-import it.thefedex87.core_ui.utils.UiText
+import it.thefedex87.core_ui.utils.asErrorUiText
 import it.thefedex87.error_handling.Result
 import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_domain.repository.NotesRepository
-import it.thefedex87.notes_presentation.R
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteEvent
 import it.thefedex87.notes_presentation.block_note.add_edit_block_note.AddEditBlockNoteState
 import it.thefedex87.notes_presentation.block_note.model.toBlockNoteUiModel

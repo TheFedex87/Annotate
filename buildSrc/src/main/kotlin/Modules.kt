@@ -17,6 +17,9 @@ object Modules {
     const val alarmsDomain = ":alarms:alarms_domain"
     const val alarmsData = ":alarms:alarms_data"
     const val alarmsPresentation = ":alarms:alarms_presentation"
+    const val searchDomain = ":search:domain"
+    const val searchData = ":search:data"
+    const val searchPresentation = ":search:presentation"
 }
 
 fun DependencyHandler.core() {
@@ -73,4 +76,16 @@ fun DependencyHandler.alarmsData() {
 
 fun DependencyHandler.alarmsPresentation() {
     implementation(project(Modules.alarmsPresentation))
+}
+
+fun DependencyHandler.searchData() {
+    implementation(project(Modules.searchData))
+}
+
+fun DependencyHandler.searchPresentation() {
+    implementation(project(Modules.searchPresentation))
+}
+
+fun DependencyHandler.searchDomain() {
+    implementation(project(Modules.searchDomain))
 }

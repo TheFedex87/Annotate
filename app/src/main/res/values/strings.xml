@@ -3,4 +3,5 @@
     <string name="recent">Recent</string>
     <string name="navigate_back">Navigate Back</string>
     <string name="calendar">Calendar</string>
+    <string name="search_hint">Search</string>
 </resources>

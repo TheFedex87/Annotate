@@ -19,4 +19,6 @@ android {
 dependencies {
     hilt()
     compose()
+
+    errorHandling()
 }

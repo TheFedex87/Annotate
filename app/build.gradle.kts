@@ -38,4 +38,7 @@ dependencies {
     alarmsPresentation()
     alarmsDomain() // For DI purpose
     alarmsData() // For DI purpose
+    searchPresentation()
+    searchData() // For DI purpose
+    searchDomain() // For DI purpose
 }

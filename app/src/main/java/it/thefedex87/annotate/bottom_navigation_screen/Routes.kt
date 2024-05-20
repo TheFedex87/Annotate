@@ -6,4 +6,5 @@ object Routes {
     const val NOTES_OF_BLOCK_NOTE = "notes_of_block_notes"
     const val ADD_EDIT_NOTE = "add_edit_note"
     const val CALENDAR = "calendar"
+    const val SEARCH = "search"
 }

@@ -2,4 +2,8 @@
 <resources>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="block_note_not_found">Block note not found</string>
+    <string name="error_saving_block_note_into_db">Error saving block note</string>
+    <string name="error_deleting_block_note">An error is occurred deleting the block note</string>
+    <string name="unknown_error">Unknown error</string>
 </resources>

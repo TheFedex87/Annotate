@@ -28,4 +28,5 @@ data class AddEditNoteState(
     val canEnableAlarm: Boolean = false,
     val isAlarmEnabled: Boolean = false,
 
+    val showNotificationRationale: Boolean = false
     )

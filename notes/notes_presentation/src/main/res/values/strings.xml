@@ -19,12 +19,13 @@
     <string name="note_not_found">Note not found</string>
     <string name="error_saving_note_into_db">Error saving note</string>
     <string name="error_removing_note_from_db">Error removing note</string>
-    <string name="block_note_not_found">Block note not found</string>
-    <string name="error_saving_block_note_into_db">Error saving block note</string>
     <string name="add_note">Add Note</string>
     <string name="remove_notes">Remove Selected Notes</string>
     <string name="remove_notes_confirm_body">Do you really want to remove the selected notes?</string>
     <string name="move_notes">Move Notes to Another Block Note</string>
     <string name="alarm">Alarm</string>
     <string name="no_alarm_past">Cannot set alarm in the past, please select a future date time</string>
+    <string name="notification_permissions">Notification permission</string>
+    <string name="notification_permission_rationale">We need notification permissions to send you reminders of your note. Please grant it.</string>
+    <string name="okay">Okay</string>
 </resources>

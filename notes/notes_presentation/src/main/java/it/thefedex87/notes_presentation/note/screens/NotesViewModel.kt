@@ -12,6 +12,7 @@ import it.thefedex87.core.utils.Consts
 import it.thefedex87.core.utils.Quadruple
 import it.thefedex87.core.utils.Quintuple
 import it.thefedex87.core_ui.events.UiEvent
+import it.thefedex87.core_ui.utils.asErrorUiText
 import it.thefedex87.error_handling.Result
 import it.thefedex87.logging.data.Logger
 import it.thefedex87.notes_domain.repository.NotesRepository

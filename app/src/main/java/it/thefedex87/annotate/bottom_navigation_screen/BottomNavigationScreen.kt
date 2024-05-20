@@ -67,6 +67,9 @@ import it.thefedex87.notes_presentation.note.screens.NotesEvent
 import it.thefedex87.notes_presentation.note.screens.NotesScreen
 import it.thefedex87.notes_presentation.note.screens.NotesViewModel
 import it.thefedex87.notes_presentation.note.screens.add_edit_note.AddEditNoteEvent
+import it.thefedex87.search.presentation.SearchEvent
+import it.thefedex87.search.presentation.SearchScreen
+import it.thefedex87.search.presentation.SearchViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -197,6 +200,31 @@ fun BottomNavigationScreen(
                     CalendarScreen(
                         state = state,
                         calendarEvent = viewModel::onEvent,
+                        onComposed = {
+                            mainScreenState = it.copy(
+                                topBarBackPressed = null
+                            )
+                        },
+                        currentMainScreenState = mainScreenState
+                    )
+                }
+                composable(
+                    route = Routes.SEARCH
+                ){
+                    val viewModel = hiltViewModel<SearchViewModel>()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
+                    SearchScreen(
+                        state = state,
+                        onEvent = {
+                            when(it) {
+                                is SearchEvent.OnBlockNoteClicked -> {
+                                    navController.navigate("${Routes.NOTES_OF_BLOCK_NOTE}/${it.blockNoteId}")
+                                }
+                                is SearchEvent.OnNoteClicked -> {
+                                    navController.navigate("${Routes.ADD_EDIT_NOTE}/${it.blockNoteId}?noteId=${it.noteId}")
+                                }
+                            }
+                        },
                         onComposed = {
                             mainScreenState = it.copy(
                                 topBarBackPressed = null
